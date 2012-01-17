@@ -1,0 +1,28 @@
+% This is generated content
+% Section 8.7.
+
+\section{Capturing HTTP cookies}
+
+\begin{verbatim}
+
+Cookie capture simplifies the tracking a complete user session. This can be
+achieved using the "capture cookie" statement in the frontend. Please refer to
+section 4.2 for more details. Only one cookie can be captured, and the same
+cookie will simultaneously be checked in the request ("Cookie:" header) and in
+the response ("Set-Cookie:" header). The respective values will be reported in
+the HTTP logs at the "captured_request_cookie" and "captured_response_cookie"
+locations (see section 8.2.3 about HTTP log format). When either cookie is
+not seen, a dash ('-') replaces the value. This way, it's easy to detect when a
+user switches to a new session for example, because the server will reassign it
+a new cookie. It is also possible to detect if a server unexpectedly sets a
+wrong cookie to a client, leading to session crossing.
+
+  Examples :
+        # capture the first cookie whose name starts with "ASPSESSION"
+        capture cookie ASPSESSION len 32
+
+        # capture the first cookie whose name is exactly "vgnvisitor"
+        capture cookie vgnvisitor= len 32
+
+
+\end{verbatim}

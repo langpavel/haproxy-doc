@@ -1,0 +1,20 @@
+% This is generated content
+% Section 8.3.4.
+
+\subsection{Disabling logging of successful connections}
+
+\begin{verbatim}
+
+Although this may sound strange at first, some large sites have to deal with
+multiple thousands of logs per second and are experiencing difficulties keeping
+them intact for a long time or detecting errors within them. If the option
+"dontlog-normal" is set on the frontend, all normal connections will not be
+logged. In this regard, a normal connection is defined as one without any
+error, timeout, retry nor redispatch. In HTTP, the status code is checked too,
+and a response with a status 5xx is not considered normal and will be logged
+too. Of course, doing is is really discouraged as it will remove most of the
+useful information from the logs. Do this only if you have no other
+alternative.
+
+
+\end{verbatim}

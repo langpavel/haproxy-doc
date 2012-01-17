@@ -1,0 +1,65 @@
+\documentclass[oneside]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages
+\usepackage{graphics}                 % Packages to allow inclusion of graphics
+\usepackage{color}                    % For creating coloured text and background
+\usepackage{hyperref}                 % For creating hyperlinks in cross references
+\usepackage[usenames,dvipsnames]{xcolor}
+
+\definecolor{ColorLink}{cmyk}{1,0.2,0,0.7}
+\hypersetup{colorlinks=true,linkcolor=ColorLink}
+\makeindex
+
+\title{HAProxy\\Configuration Manual\\version 1.5}
+\author{Willy Tarreau}
+\date{2011/09/10}
+
+\newcommand{\bslash}{$\backslash$}
+\newcommand{\gttt}{$>>>$}
+
+\begin{document}
+\maketitle
+\addcontentsline{toc}{chapter}{Contents}
+
+\pagenumbering{roman}
+
+\tableofcontents
+% \listoffigures
+% \listoftables
+
+
+
+\chapter*{Preface}\normalsize
+\addcontentsline{toc}{chapter}{Preface}
+\pagestyle{plain}
+
+This document covers the configuration language as implemented in the version
+specified above. It does not provide any hint, example or advice. For such
+documentation, please refer to the Reference Manual or the Architecture Manual.
+The summary below is meant to help you search sections by name and navigate
+through the document.
+
+
+\pagestyle{headings}
+\pagenumbering{arabic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{---chapters.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{thebibliography}{99}
+% \addcontentsline{toc}{chapter}{Bibliography}
+
+% \bibitem{lamport} L. Lamport. {\bf \LaTeX \ A Document Preparation System}
+% Addison-Wesley, California 1986.
+
+
+% \end{thebibliography}
+
+% \include{index}
+% \addcontentsline{toc}{chapter}{Index}
+
+\end{document}
+

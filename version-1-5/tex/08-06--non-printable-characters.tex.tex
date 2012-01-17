@@ -1,0 +1,26 @@
+% This is generated content
+% Section 8.6.
+
+\section{Non-printable characters}
+
+\begin{verbatim}
+
+In order not to cause trouble to log analysis tools or terminals during log
+consulting, non-printable characters are not sent as-is into log files, but are
+converted to the two-digits hexadecimal representation of their ASCII code,
+prefixed by the character '#'. The only characters that can be logged without
+being escaped are comprised between 32 and 126 (inclusive). Obviously, the
+escape character '#' itself is also encoded to avoid any ambiguity ("#23"). It
+is the same for the character '"' which becomes "#22", as well as '{', '|' and
+'}' when logging headers.
+
+Note that the space character (' ') is not encoded in headers, which can cause
+issues for tools relying on space count to locate fields. A typical header
+containing spaces is "User-Agent".
+
+Last, it has been observed that some syslog daemons such as syslog-ng escape
+the quote ('"') with a backslash ('\'). The reverse operation can safely be
+performed since no quote may appear anywhere else in the logs.
+
+
+\end{verbatim}

@@ -1,0 +1,79 @@
+% This is generated content
+% Section 8.8.
+
+\section{Capturing HTTP headers}
+
+\begin{verbatim}
+
+Header captures are useful to track unique request identifiers set by an upper
+proxy, virtual host names, user-agents, POST content-length, referrers, etc. In
+the response, one can search for information about the response length, how the
+server asked the cache to behave, or an object location during a redirection.
+
+Header captures are performed using the "capture request header" and "capture
+response header" statements in the frontend. Please consult their definition in
+section 4.2 for more details.
+
+It is possible to include both request headers and response headers at the same
+time. Non-existent headers are logged as empty strings, and if one header
+appears more than once, only its last occurrence will be logged. Request headers
+are grouped within braces '{' and '}' in the same order as they were declared,
+and delimited with a vertical bar '|' without any space. Response headers
+follow the same representation, but are displayed after a space following the
+request headers block. These blocks are displayed just before the HTTP request
+in the logs.
+
+  Example :
+        # This instance chains to the outgoing proxy
+        listen proxy-out
+            mode http
+            option httplog
+            option logasap
+            log global
+            server cache1 192.168.1.1:3128
+
+            # log the name of the virtual server
+            capture request  header Host len 20
+
+            # log the amount of data uploaded during a POST
+            capture request  header Content-Length len 10
+
+            # log the beginning of the referrer
+            capture request  header Referer len 20
+
+            # server name (useful for outgoing proxies only)
+            capture response header Server len 20
+
+            # logging the content-length is useful with "option logasap"
+            capture response header Content-Length len 10
+
+            # log the expected cache behaviour on the response
+            capture response header Cache-Control len 8
+
+            # the Via header will report the next proxy's name
+            capture response header Via len 20
+
+            # log the URL location during a redirection
+            capture response header Location len 20
+
+    >>> Aug  9 20:26:09 localhost \
+          haproxy[2022]: 127.0.0.1:34014 [09/Aug/2004:20:26:09] proxy-out \
+          proxy-out/cache1 0/0/0/162/+162 200 +350 - - ---- 0/0/0/0/0 0/0 \
+          {fr.adserver.yahoo.co||http://fr.f416.mail.} {|864|private||} \
+          "GET http://fr.adserver.yahoo.com/"
+
+    >>> Aug  9 20:30:46 localhost \
+          haproxy[2022]: 127.0.0.1:34020 [09/Aug/2004:20:30:46] proxy-out \
+          proxy-out/cache1 0/0/0/182/+182 200 +279 - - ---- 0/0/0/0/0 0/0 \
+          {w.ods.org||} {Formilux/0.1.8|3495|||} \
+          "GET http://trafic.1wt.eu/ HTTP/1.1"
+
+    >>> Aug  9 20:30:46 localhost \
+          haproxy[2022]: 127.0.0.1:34028 [09/Aug/2004:20:30:46] proxy-out \
+          proxy-out/cache1 0/0/2/126/+128 301 +223 - - ---- 0/0/0/0/0 0/0 \
+          {www.sytadin.equipement.gouv.fr||http://trafic.1wt.eu/} \
+          {Apache|230|||http://www.sytadin.} \
+          "GET http://www.sytadin.equipement.gouv.fr/ HTTP/1.1"
+
+
+\end{verbatim}

@@ -1,0 +1,417 @@
+% This is generated content
+% Section 9.2.
+
+\section{Unix Socket commands}
+
+\begin{verbatim}
+
+The following commands are supported on the UNIX stats socket ; all of them
+must be terminated by a line feed. The socket supports pipelining, so that it
+is possible to chain multiple commands at once provided they are delimited by
+a semi-colon or a line feed, although the former is more reliable as it has no
+risk of being truncated over the network. The responses themselves will each be
+followed by an empty line, so it will be easy for an external script to match a
+given response with a given request. By default one command line is processed
+then the connection closes, but there is an interactive allowing multiple lines
+to be issued one at a time.
+
+It is important to understand that when multiple haproxy processes are started
+on the same sockets, any process may pick up the request and will output its
+own stats.
+
+clear counters
+  Clear the max values of the statistics counters in each proxy (frontend &
+  backend) and in each server. The cumulated counters are not affected. This
+  can be used to get clean counters after an incident, without having to
+  restart nor to clear traffic counters. This command is restricted and can
+  only be issued on sockets configured for levels "operator" or "admin".
+
+clear counters all
+  Clear all statistics counters in each proxy (frontend & backend) and in each
+  server. This has the same effect as restarting. This command is restricted
+  and can only be issued on sockets configured for level "admin".
+
+clear table <table> [ data.<type> <operator> <value> ] | [ key <key> ]
+  Remove entries from the stick-table <table>.
+
+  This is typically used to unblock some users complaining they have been
+  abusively denied access to a service, but this can also be used to clear some
+  stickiness entries matching a server that is going to be replaced (see "show
+  table" below for details).  Note that sometimes, removal of an entry will be
+  refused because it is currently tracked by a session. Retrying a few seconds
+  later after the session ends is usual enough.
+
+  In the case where no options arguments are given all entries will be removed.
+
+  When the "data." form is used entries matching a filter applied using the
+  stored data (see "stick-table" in section 4.2) are removed.  A stored data
+  type must be specified in <type>, and this data type must be stored in the
+  table otherwise an error is reported. The data is compared according to
+  <operator> with the 64-bit integer <value>.  Operators are the same as with
+  the ACLs :
+
+    - eq : match entries whose data is equal to this value
+    - ne : match entries whose data is not equal to this value
+    - le : match entries whose data is less than or equal to this value
+    - ge : match entries whose data is greater than or equal to this value
+    - lt : match entries whose data is less than this value
+    - gt : match entries whose data is greater than this value
+
+  When the key form is used the entry <key> is removed.  The key must be of the
+  same type as the table, which currently is limited to IPv4, IPv6, integer and
+  string.
+
+  Example :
+        $ echo "show table http_proxy" | socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:2
+    >>> 0x80e6a4c: key=127.0.0.1 use=0 exp=3594729 gpc0=0 conn_rate(30000)=1 \
+          bytes_out_rate(60000)=187
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+
+        $ echo "clear table http_proxy key 127.0.0.1" | socat stdio /tmp/sock1
+
+        $ echo "show table http_proxy" | socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:1
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+        $ echo "clear table http_proxy data.gpc0 eq 1" | socat stdio /tmp/sock1
+        $ echo "show table http_proxy" | socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:1
+
+disable frontend <frontend>
+  Mark the frontend as temporarily stopped. This corresponds to the mode which
+  is used during a soft restart : the frontend releases the port but can be
+  enabled again if needed. This should be used with care as some non-Linux OSes
+  are unable to enable it back. This is intended to be used in environments
+  where stopping a proxy is not even imaginable but a misconfigured proxy must
+  be fixed. That way it's possible to release the port and bind it into another
+  process to restore operations. The frontend will appear with status "STOP"
+  on the stats page.
+
+  The frontend may be specified either by its name or by its numeric ID,
+  prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+disable server <backend>/<server>
+  Mark the server DOWN for maintenance. In this mode, no more checks will be
+  performed on the server until it leaves maintenance.
+  If the server is tracked by other servers, those servers will be set to DOWN
+  during the maintenance.
+
+  In the statistics page, a server DOWN for maintenance will appear with a
+  "MAINT" status, its tracking servers with the "MAINT(via)" one.
+
+  Both the backend and the server may be specified either by their name or by
+  their numeric ID, prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+enable frontend <frontend>
+  Resume a frontend which was temporarily stopped. It is possible that some of
+  the listening ports won't be able to bind anymore (eg: if another process
+  took them since the 'disable frontend' operation). If this happens, an error
+  is displayed. Some operating systems might not be able to resume a frontend
+  which was disabled.
+
+  The frontend may be specified either by its name or by its numeric ID,
+  prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+enable server <backend>/<server>
+  If the server was previously marked as DOWN for maintenance, this marks the
+  server UP and checks are re-enabled.
+
+  Both the backend and the server may be specified either by their name or by
+  their numeric ID, prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+get weight <backend>/<server>
+  Report the current weight and the initial weight of server <server> in
+  backend <backend> or an error if either doesn't exist. The initial weight is
+  the one that appears in the configuration file. Both are normally equal
+  unless the current weight has been changed. Both the backend and the server
+  may be specified either by their name or by their numeric ID, prefixed with a
+  sharp ('#').
+
+help
+  Print the list of known keywords and their basic usage. The same help screen
+  is also displayed for unknown commands.
+
+prompt
+  Toggle the prompt at the beginning of the line and enter or leave interactive
+  mode. In interactive mode, the connection is not closed after a command
+  completes. Instead, the prompt will appear again, indicating the user that
+  the interpreter is waiting for a new command. The prompt consists in a right
+  angle bracket followed by a space "> ". This mode is particularly convenient
+  when one wants to periodically check information such as stats or errors.
+  It is also a good idea to enter interactive mode before issuing a "help"
+  command.
+
+quit
+  Close the connection when in interactive mode.
+
+set maxconn frontend <frontend> <value>
+  Dynamically change the specified frontend's maxconn setting. Any non-null
+  positive value is allowed, but setting values larger than the global maxconn
+  does not make much sense. If the limit is increased and connections were
+  pending, they will immediately be accepted. If it is lowered to a value below
+  the current number of connections, new connections acceptation will be
+  delayed until the threshold is reached. The frontend might be specified by
+  either its name or its numeric ID prefixed with a sharp ('#').
+
+set maxconn global <maxconn>
+  Dynamically change the global maxconn setting within the range defined by the
+  initial global maxconn setting. If it is increased and connections were
+  pending, they will immediately be accepted. If it is lowered to a value below
+  the current number of connections, new connections acceptation will be
+  delayed until the threshold is reached. A value of zero restores the initial
+  setting.
+
+set rate-limit connections global <value>
+  Change the process-wide connection rate limit, which is set by the global
+  'maxconnrate' setting. A value of zero disables the limitation. This limit
+  applies to all frontends and the change has an immediate effect. The value
+  is passed in number of connections per second.
+
+set timeout cli <delay>
+  Change the CLI interface timeout for current connection. This can be useful
+  during long debugging sessions where the user needs to constantly inspect
+  some indicators without being disconnected. The delay is passed in seconds.
+
+set weight <backend>/<server> <weight>[%]
+  Change a server's weight to the value passed in argument. If the value ends
+  with the '%' sign, then the new weight will be relative to the initially
+  configured weight. Relative weights are only permitted between 0 and 100%,
+  and absolute weights are permitted between 0 and 256. Servers which are part
+  of a farm running a static load-balancing algorithm have stricter limitations
+  because the weight cannot change once set. Thus for these servers, the only
+  accepted values are 0 and 100% (or 0 and the initial weight). Changes take
+  effect immediately, though certain LB algorithms require a certain amount of
+  requests to consider changes. A typical usage of this command is to disable
+  a server during an update by setting its weight to zero, then to enable it
+  again after the update by setting it back to 100%. This command is restricted
+  and can only be issued on sockets configured for level "admin". Both the
+  backend and the server may be specified either by their name or by their
+  numeric ID, prefixed with a sharp ('#').
+
+show errors [<iid>]
+  Dump last known request and response errors collected by frontends and
+  backends. If <iid> is specified, the limit the dump to errors concerning
+  either frontend or backend whose ID is <iid>. This command is restricted
+  and can only be issued on sockets configured for levels "operator" or
+  "admin".
+
+  The errors which may be collected are the last request and response errors
+  caused by protocol violations, often due to invalid characters in header
+  names. The report precisely indicates what exact character violated the
+  protocol. Other important information such as the exact date the error was
+  detected, frontend and backend names, the server name (when known), the
+  internal session ID and the source address which has initiated the session
+  are reported too.
+
+  All characters are returned, and non-printable characters are encoded. The
+  most common ones (\t = 9, \n = 10, \r = 13 and \e = 27) are encoded as one
+  letter following a backslash. The backslash itself is encoded as '\\' to
+  avoid confusion. Other non-printable characters are encoded '\xNN' where
+  NN is the two-digits hexadecimal representation of the character's ASCII
+  code.
+
+  Lines are prefixed with the position of their first character, starting at 0
+  for the beginning of the buffer. At most one input line is printed per line,
+  and large lines will be broken into multiple consecutive output lines so that
+  the output never goes beyond 79 characters wide. It is easy to detect if a
+  line was broken, because it will not end with '\n' and the next line's offset
+  will be followed by a '+' sign, indicating it is a continuation of previous
+  line.
+
+  Example :
+        $ echo "show errors" | socat stdio /tmp/sock1
+    >>> [04/Mar/2009:15:46:56.081] backend http-in (#2) : invalid response
+          src 127.0.0.1, session #54, frontend fe-eth0 (#1), server s2 (#1)
+          response length 213 bytes, error at position 23:
+
+          00000  HTTP/1.0 200 OK\r\n
+          00017  header/bizarre:blah\r\n
+          00038  Location: blah\r\n
+          00054  Long-line: this is a very long line which should b
+          00104+ e broken into multiple lines on the output buffer,
+          00154+  otherwise it would be too large to print in a ter
+          00204+ minal\r\n
+          00211  \r\n
+
+    In the example above, we see that the backend "http-in" which has internal
+    ID 2 has blocked an invalid response from its server s2 which has internal
+    ID 1. The request was on session 54 initiated by source 127.0.0.1 and
+    received by frontend fe-eth0 whose ID is 1. The total response length was
+    213 bytes when the error was detected, and the error was at byte 23. This
+    is the slash ('/') in header name "header/bizarre", which is not a valid
+    HTTP character for a header name.
+
+show info
+  Dump info about haproxy status on current process.
+
+show sess
+  Dump all known sessions. Avoid doing this on slow connections as this can
+  be huge. This command is restricted and can only be issued on sockets
+  configured for levels "operator" or "admin".
+
+show sess <id>
+  Display a lot of internal information about the specified session identifier.
+  This identifier is the first field at the beginning of the lines in the dumps
+  of "show sess" (it corresponds to the session pointer). Those information are
+  useless to most users but may be used by haproxy developers to troubleshoot a
+  complex bug. The output format is intentionally not documented so that it can
+  freely evolve depending on demands.
+
+show stat [<iid> <type> <sid>]
+  Dump statistics in the CSV format. By passing <id>, <type> and <sid>, it is
+  possible to dump only selected items :
+    - <iid> is a proxy ID, -1 to dump everything
+    - <type> selects the type of dumpable objects : 1 for frontends, 2 for
+       backends, 4 for servers, -1 for everything. These values can be ORed,
+       for example:
+          1 + 2     = 3   -> frontend + backend.
+          1 + 2 + 4 = 7   -> frontend + backend + server.
+    - <sid> is a server ID, -1 to dump everything from the selected proxy.
+
+  Example :
+        $ echo "show info;show stat" | socat stdio unix-connect:/tmp/sock1
+    >>> Name: HAProxy
+        Version: 1.4-dev2-49
+        Release_date: 2009/09/23
+        Nbproc: 1
+        Process_num: 1
+        (...)
+
+        # pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bout,dreq,  (...)
+        stats,FRONTEND,,,0,0,1000,0,0,0,0,0,0,,,,,OPEN,,,,,,,,,1,1,0, (...)
+        stats,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,0,0,0,,0,250,(...)
+        (...)
+        www1,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,1,1,0,,0,250, (...)
+
+        $
+
+    Here, two commands have been issued at once. That way it's easy to find
+    which process the stats apply to in multi-process mode. Notice the empty
+    line after the information output which marks the end of the first block.
+    A similar empty line appears at the end of the second block (stats) so that
+    the reader knows the output has not been truncated.
+
+show table
+  Dump general information on all known stick-tables. Their name is returned
+  (the name of the proxy which holds them), their type (currently zero, always
+  IP), their size in maximum possible number of entries, and the number of
+  entries currently in use.
+
+  Example :
+        $ echo "show table" | socat stdio /tmp/sock1
+    >>> # table: front_pub, type: ip, size:204800, used:171454
+    >>> # table: back_rdp, type: ip, size:204800, used:0
+
+show table <name> [ data.<type> <operator> <value> ] | [ key <key> ]
+  Dump contents of stick-table <name>. In this mode, a first line of generic
+  information about the table is reported as with "show table", then all
+  entries are dumped. Since this can be quite heavy, it is possible to specify
+  a filter in order to specify what entries to display.
+
+  When the "data." form is used the filter applies to the stored data (see
+  "stick-table" in section 4.2).  A stored data type must be specified
+  in <type>, and this data type must be stored in the table otherwise an
+  error is reported. The data is compared according to <operator> with the
+  64-bit integer <value>.  Operators are the same as with the ACLs :
+
+    - eq : match entries whose data is equal to this value
+    - ne : match entries whose data is not equal to this value
+    - le : match entries whose data is less than or equal to this value
+    - ge : match entries whose data is greater than or equal to this value
+    - lt : match entries whose data is less than this value
+    - gt : match entries whose data is greater than this value
+
+
+  When the key form is used the entry <key> is shown.  The key must be of the
+  same type as the table, which currently is limited to IPv4, IPv6, integer,
+  and string.
+
+  Example :
+        $ echo "show table http_proxy" | socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:2
+    >>> 0x80e6a4c: key=127.0.0.1 use=0 exp=3594729 gpc0=0 conn_rate(30000)=1  \
+          bytes_out_rate(60000)=187
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+
+        $ echo "show table http_proxy data.gpc0 gt 0" | socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:2
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+
+        $ echo "show table http_proxy data.conn_rate gt 5" | \
+            socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:2
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+
+        $ echo "show table http_proxy key 127.0.0.2" | \
+            socat stdio /tmp/sock1
+    >>> # table: http_proxy, type: ip, size:204800, used:2
+    >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
+          bytes_out_rate(60000)=191
+
+  When the data criterion applies to a dynamic value dependent on time such as
+  a bytes rate, the value is dynamically computed during the evaluation of the
+  entry in order to decide whether it has to be dumped or not. This means that
+  such a filter could match for some time then not match anymore because as
+  time goes, the average event rate drops.
+
+  It is possible to use this to extract lists of IP addresses abusing the
+  service, in order to monitor them or even blacklist them in a firewall.
+  Example :
+        $ echo "show table http_proxy data.gpc0 gt 0" \
+          | socat stdio /tmp/sock1 \
+          | fgrep 'key=' | cut -d' ' -f2 | cut -d= -f2 > abusers-ip.txt
+          ( or | awk '/key/{ print a[split($2,a,"=")]; }' )
+
+shutdown frontend <frontend>
+  Completely delete the specified frontend. All the ports it was bound to will
+  be released. It will not be possible to enable the frontend anymore after
+  this operation. This is intended to be used in environments where stopping a
+  proxy is not even imaginable but a misconfigured proxy must be fixed. That
+  way it's possible to release the port and bind it into another process to
+  restore operations. The frontend will not appear at all on the stats page
+  once it is terminated.
+
+  The frontend may be specified either by its name or by its numeric ID,
+  prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+shutdown session <id>
+  Immediately terminate the session matching the specified session identifier.
+  This identifier is the first field at the beginning of the lines in the dumps
+  of "show sess" (it corresponds to the session pointer). This can be used to
+  terminate a long-running session without waiting for a timeout or when an
+  endless transfer is ongoing. Such terminated sessions are reported with a 'K'
+  flag in the logs.
+
+shutdown sessions <backend>/<server>
+  Immediately terminate all the sessions attached to the specified server. This
+  can be used to terminate long-running sessions after a server is put into
+  maintenance mode, for instance. Such terminated sessions are reported with a
+  'K' flag in the logs.
+
+/*
+ * Local variables:
+ *  fill-column: 79
+ * End:
+ */
+
+\end{verbatim}

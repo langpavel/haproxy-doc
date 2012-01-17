@@ -1,0 +1,146 @@
+% This is generated content
+% Section 7.8.
+
+\section{Pattern extraction}
+
+\begin{verbatim}
+
+The stickiness features relies on pattern extraction in the request and
+response. Sometimes the data needs to be converted first before being stored,
+for instance converted from ASCII to IP or upper case to lower case.
+
+All these operations of data extraction and conversion are defined as
+"pattern extraction rules". A pattern rule always has the same format. It
+begins with a single pattern fetch word, potentially followed by a list of
+arguments within parenthesis then an optional list of transformations. As
+much as possible, the pattern fetch functions use the same name as their
+equivalent used in ACLs.
+
+The list of currently supported pattern fetch functions is the following :
+
+  src          This is the source IPv4 address of the client of the session.
+               It is of type IPv4 and works on both IPv4 and IPv6 tables.
+               On IPv6 tables, IPv4 address is mapped to its IPv6 equivalent,
+               according to RFC 4291.
+
+  src6         This is the source IPv6 address of the client of the session.
+               It is of type IPv6 and only works with such tables.
+
+  dst          This is the destination IPv4 address of the session on the
+               client side, which is the address the client connected to.
+               It can be useful when running in transparent mode. It is of
+               type IPv4 and works on both IPv4 and IPv6 tables.
+               On IPv6 tables, IPv4 address is mapped to its IPv6 equivalent,
+               according to RFC 4291.
+
+  dst6         This is the destination IPv6 address of the session on the
+               client side, which is the address the client connected to.
+               It can be useful when running in transparent mode. It is of
+               type IPv6 and only works with such tables.
+
+  dst_port     This is the destination TCP port of the session on the client
+               side, which is the port the client connected to. This might be
+               used when running in transparent mode or when assigning dynamic
+               ports to some clients for a whole application session. It is of
+               type integer and only works with such tables.
+
+  hdr(<name>)    This extracts the last occurrence of header <name> in an HTTP
+               request and converts it to an IP address. This IP address is
+               then used to match the table. A typical use is with the
+               x-forwarded-for header.
+
+  payload(<offset>,<length>)
+               This extracts a binary block of <length> bytes, and starting
+               at bytes <offset> in the buffer of request or response (request
+               on "stick on" or "stick match" or response in on "stick store
+               response").
+
+  payload_lv(<offset1>,<length>[,<offset2>])
+               This extracts a binary block. In a first step the size of the
+               block is read from response or request buffer at <offset>
+               bytes and considered coded on <length> bytes. In a second step
+               data of the block are read from buffer at <offset2> bytes
+               (by default <lengthoffset> + <lengthsize>).
+               If <offset2> is prefixed by '+' or '-', it is relative to
+               <lengthoffset> + <lengthsize> else it is absolute.
+               Ex: see SSL session id  example in "stick table" chapter.
+                
+  url_param(<name>)
+	       This extracts the first occurrence of the parameter <name> in
+	       the query string of the request and uses the corresponding value
+               to match. A typical use is to get sticky session through url (e.g.
+	       http://example.com/foo?JESSIONID=some_id with
+	       url_param(JSESSIONID)), for cases where cookies cannot be used.
+
+  rdp_cookie(<name>)
+	       This extracts the value of the rdp cookie <name> as a string
+	       and uses this value to match. This enables implementation of
+	       persistence based on the mstshash cookie. This is typically
+	       done if there is no msts cookie present.
+
+	       This differs from "balance rdp-cookie" in that any balancing
+	       algorithm may be used and thus the distribution of clients
+	       to backend servers is not linked to a hash of the RDP
+	       cookie. It is envisaged that using a balancing algorithm
+	       such as "balance roundrobin" or "balance leastconnect" will
+	       lead to a more even distribution of clients to backend
+	       servers than the hash used by "balance rdp-cookie".
+
+	       Example :
+		listen tse-farm
+		    bind 0.0.0.0:3389
+		    # wait up to 5s for an RDP cookie in the request
+		    tcp-request inspect-delay 5s
+		    tcp-request content accept if RDP_COOKIE
+		    # apply RDP cookie persistence
+		    persist rdp-cookie
+		    # Persist based on the mstshash cookie
+		    # This is only useful makes sense if
+		    # balance rdp-cookie is not used
+		    stick-table type string size 204800
+		    stick on rdp_cookie(mstshash)
+		    server srv1 1.1.1.1:3389
+		    server srv1 1.1.1.2:3389
+
+	       See also : "balance rdp-cookie", "persist rdp-cookie",
+	       "tcp-request" and the "req_rdp_cookie" ACL.
+
+  cookie(<name>)
+	       This extracts the last occurrence of the cookie name <name> on a
+	       "Cookie" header line from the request and uses the corresponding
+	       value to match. A typical use is to get multiple clients sharing
+	       a same profile use the same server. This can be similar to what
+	       "appsession" does with the "request-learn" statement, but with
+	       support for multi-peer synchronization and state keeping across
+	       restarts.
+
+	       See also : "appsession"
+
+  set-cookie(<name>)
+	       This extracts the last occurrence of the cookie name <name> on a
+	       "Set-Cookie" header line from the response and uses the
+	       corresponding value to match. This can be comparable to what
+	       "appsession" does with default options, but with support for
+	        multi-peer synchronization and state keeping across restarts.
+
+	       See also : "appsession"
+
+
+The currently available list of transformations include :
+
+  lower        Convert a string pattern to lower case. This can only be placed
+               after a string pattern fetch function or after a conversion
+               function returning a string type. The result is of type string.
+
+  upper        Convert a string pattern to upper case. This can only be placed
+               after a string pattern fetch function or after a conversion
+               function returning a string type. The result is of type string.
+
+  ipmask(<mask>) Apply a mask to an IPv4 address, and use the result for lookups
+               and storage. This can be used to make all hosts within a
+               certain mask to share the same table entries and as such use
+               the same server. The mask can be passed in dotted form (eg:
+               255.255.255.0) or in CIDR form (eg: 24).
+
+
+\end{verbatim}

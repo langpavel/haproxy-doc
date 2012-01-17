@@ -1,0 +1,81 @@
+% This is generated content
+% Section 9.1.
+
+\section{CSV format}
+
+\begin{verbatim}
+
+The statistics may be consulted either from the unix socket or from the HTTP
+page. Both means provide a CSV format whose fields follow.
+
+  0. pxname: proxy name
+  1. svname: service name (FRONTEND for frontend, BACKEND for backend, any name
+    for server)
+  2. qcur: current queued requests
+  3. qmax: max queued requests
+  4. scur: current sessions
+  5. smax: max sessions
+  6. slim: sessions limit
+  7. stot: total sessions
+  8. bin: bytes in
+  9. bout: bytes out
+ 10. dreq: denied requests
+ 11. dresp: denied responses
+ 12. ereq: request errors
+ 13. econ: connection errors
+ 14. eresp: response errors (among which srv_abrt)
+ 15. wretr: retries (warning)
+ 16. wredis: redispatches (warning)
+ 17. status: status (UP/DOWN/NOLB/MAINT/MAINT(via)...)
+ 18. weight: server weight (server), total weight (backend)
+ 19. act: server is active (server), number of active servers (backend)
+ 20. bck: server is backup (server), number of backup servers (backend)
+ 21. chkfail: number of failed checks
+ 22. chkdown: number of UP->DOWN transitions
+ 23. lastchg: last status change (in seconds)
+ 24. downtime: total downtime (in seconds)
+ 25. qlimit: queue limit
+ 26. pid: process id (0 for first instance, 1 for second, ...)
+ 27. iid: unique proxy id
+ 28. sid: service id (unique inside a proxy)
+ 29. throttle: warm up status
+ 30. lbtot: total number of times a server was selected
+ 31. tracked: id of proxy/server if tracking is enabled
+ 32. type (0=frontend, 1=backend, 2=server, 3=socket)
+ 33. rate: number of sessions per second over last elapsed second
+ 34. rate_lim: limit on new sessions per second
+ 35. rate_max: max number of new sessions per second
+ 36. check_status: status of last health check, one of:
+        UNK     -> unknown
+        INI     -> initializing
+        SOCKERR -> socket error
+        L4OK    -> check passed on layer 4, no upper layers testing enabled
+        L4TMOUT -> layer 1-4 timeout
+        L4CON   -> layer 1-4 connection problem, for example
+                   "Connection refused" (tcp rst) or "No route to host" (icmp)
+        L6OK    -> check passed on layer 6
+        L6TOUT  -> layer 6 (SSL) timeout
+        L6RSP   -> layer 6 invalid response - protocol error
+        L7OK    -> check passed on layer 7
+        L7OKC   -> check conditionally passed on layer 7, for example 404 with
+                   disable-on-404
+        L7TOUT  -> layer 7 (HTTP/SMTP) timeout
+        L7RSP   -> layer 7 invalid response - protocol error
+        L7STS   -> layer 7 response error, for example HTTP 5xx
+ 37. check_code: layer5-7 code, if available
+ 38. check_duration: time in ms took to finish last health check
+ 39. hrsp_1xx: http responses with 1xx code
+ 40. hrsp_2xx: http responses with 2xx code
+ 41. hrsp_3xx: http responses with 3xx code
+ 42. hrsp_4xx: http responses with 4xx code
+ 43. hrsp_5xx: http responses with 5xx code
+ 44. hrsp_other: http responses with other codes (protocol error)
+ 45. hanafail: failed health checks details
+ 46. req_rate: HTTP requests per second over last elapsed second
+ 47. req_rate_max: max number of HTTP requests per second observed
+ 48. req_tot: total number of HTTP requests received
+ 49. cli_abrt: number of data transfers aborted by the client
+ 50. srv_abrt: number of data transfers aborted by the server (inc. in eresp)
+
+
+\end{verbatim}
