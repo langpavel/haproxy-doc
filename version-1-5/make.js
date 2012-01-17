@@ -81,20 +81,29 @@ var writeFiles = module.exports.writeFiles = function(parts) {
 		part = parts[i];
 		filenamebase = part.chapterparts.map(function(p) {
 				return p.length === 1 ? '0'+p : p;
-			}).join('-') + '--' + part.title.toLowerCase().replace(/[^a-z()]+/g,'-') + '.tex';
+			}).join('-') + '_' + part.title.toLowerCase().replace(/[^a-z()]+/g,'-');
 
-		fs.writeFileSync('tex/'+filenamebase+'.tex', getTeXContent(part), 'utf8');
+		fs.writeFileSync('tex/gen_'+filenamebase+'.tex', getTeXContent(part), 'utf8');
 
 		includes.push(filenamebase);
-		inputs.push('\\input{',filenamebase,'.tex}\n');
+		inputs.push('\\input{gen_',filenamebase,'.tex}\n');
 	}
 
-	fs.writeFileSync('tex/---chapters.tex', inputs.join(''), 'utf8');
+	fs.writeFileSync('tex/gen_chapters.tex', inputs.join(''), 'utf8');
 
 	return includes;
 };
 
 
+// tex generation here:
+
+var parts = split_chapters(text);
+var filenames = writeFiles(parts);
+
+// write out part files:
+filenames.forEach(function(fname){
+	console.log(fname);
+});
 
 
 
