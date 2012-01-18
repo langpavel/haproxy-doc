@@ -79,14 +79,14 @@ var writeFiles = module.exports.writeFiles = function(parts) {
 	var i, l, filenamebase, part, includes = [], inputs = [];
 	for(i=0, l=parts.length; i<l; i++) {
 		part = parts[i];
-		filenamebase = part.chapterparts.map(function(p) {
+		filenamebase = 'gen_' + part.chapterparts.map(function(p) {
 				return p.length === 1 ? '0'+p : p;
-			}).join('-') + '_' + part.title.toLowerCase().replace(/[^a-z()]+/g,'-');
+			}).join('-') + '--' + part.title.toLowerCase().replace(/[^a-z()]+/g,'-');
 
-		fs.writeFileSync('tex/gen_'+filenamebase+'.tex', getTeXContent(part), 'utf8');
+		fs.writeFileSync('tex/'+filenamebase+'.tex', getTeXContent(part), 'utf8');
 
 		includes.push(filenamebase);
-		inputs.push('\\input{gen_',filenamebase,'.tex}\n');
+		inputs.push('\\input{',filenamebase,'.tex}\n');
 	}
 
 	fs.writeFileSync('tex/gen_chapters.tex', inputs.join(''), 'utf8');
