@@ -1,0 +1,56 @@
+% This is generated content
+% Section 1.2.1.
+
+\subsection{The Request line}
+
+\begin{verbatim}
+
+Line 1 is the "request line". It is always composed of 3 fields :
+
+  - a METHOD      : GET
+  - a URI         : /serv/login.php?lang=en&profile=2
+  - a version tag : HTTP/1.1
+
+All of them are delimited by what the standard calls LWS (linear white spaces),
+which are commonly spaces, but can also be tabs or line feeds/carriage returns
+followed by spaces/tabs. The method itself cannot contain any colon (':') and
+is limited to alphabetic letters. All those various combinations make it
+desirable that HAProxy performs the splitting itself rather than leaving it to
+the user to write a complex or inaccurate regular expression.
+
+The URI itself can have several forms :
+
+  - A "relative URI" :
+
+      /serv/login.php?lang=en&profile=2
+
+    It is a complete URL without the host part. This is generally what is
+    received by servers, reverse proxies and transparent proxies.
+
+  - An "absolute URI", also called a "URL" :
+
+      http://192.168.0.12:8080/serv/login.php?lang=en&profile=2
+
+    It is composed of a "scheme" (the protocol name followed by '://'), a host
+    name or address, optionally a colon (':') followed by a port number, then
+    a relative URI beginning at the first slash ('/') after the address part.
+    This is generally what proxies receive, but a server supporting HTTP/1.1
+    must accept this form too.
+
+  - a star ('*') : this form is only accepted in association with the OPTIONS
+    method and is not relayable. It is used to inquiry a next hop's
+    capabilities.
+
+  - an address:port combination : 192.168.0.12:80
+    This is used with the CONNECT method, which is used to establish TCP
+    tunnels through HTTP proxies, generally for HTTPS, but sometimes for
+    other protocols too.
+
+In a relative URI, two sub-parts are identified. The part before the question
+mark is called the "path". It is typically the relative path to static objects
+on the server. The part after the question mark is called the "query string".
+It is mostly used with GET requests sent to dynamic scripts and is very
+specific to the language, framework or application in use.
+
+
+\end{verbatim}

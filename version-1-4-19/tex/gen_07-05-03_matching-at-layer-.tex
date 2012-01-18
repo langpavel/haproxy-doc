@@ -1,0 +1,214 @@
+% This is generated content
+% Section 7.5.3.
+
+\subsection{Matching at Layer 7}
+
+\begin{verbatim}
+
+A third set of criteria applies to information which can be found at the
+application layer (layer 7). Those require that a full HTTP request has been
+read, and are only evaluated then. They may require slightly more CPU resources
+than the layer 4 ones, but not much since the request and response are indexed.
+
+hdr <string>
+hdr(header) <string>
+  Note: all the "hdr*" matching criteria either apply to all headers, or to a
+  particular header whose name is passed between parenthesis and without any
+  space. The header name is not case-sensitive. The header matching complies
+  with RFC2616, and treats as separate headers all values delimited by commas.
+  Use the shdr() variant for response headers sent by the server.
+
+  The "hdr" criteria returns true if any of the headers matching the criteria
+  match any of the strings. This can be used to check exact for values. For
+  instance, checking that "connection: close" is set :
+
+     hdr(Connection) -i close
+
+hdr_beg <string>
+hdr_beg(header) <string>
+  Returns true when one of the headers begins with one of the strings. See
+  "hdr" for more information on header matching. Use the shdr_beg() variant for
+  response headers sent by the server.
+
+hdr_cnt <integer>
+hdr_cnt(header) <integer>
+  Returns true when the number of occurrence of the specified header matches
+  the values or ranges specified. It is important to remember that one header
+  line may count as several headers if it has several values. This is used to
+  detect presence, absence or abuse of a specific header, as well as to block
+  request smuggling attacks by rejecting requests which contain more than one
+  of certain headers. See "hdr" for more information on header matching. Use
+  the shdr_cnt() variant for response headers sent by the server.
+
+hdr_dir <string>
+hdr_dir(header) <string>
+  Returns true when one of the headers contains one of the strings either
+  isolated or delimited by slashes. This is used to perform filename or
+  directory name matching, and may be used with Referer. See "hdr" for more
+  information on header matching. Use the shdr_dir() variant for response
+  headers sent by the server.
+
+hdr_dom <string>
+hdr_dom(header) <string>
+  Returns true when one of the headers contains one of the strings either
+  isolated or delimited by dots. This is used to perform domain name matching,
+  and may be used with the Host header. See "hdr" for more information on
+  header matching. Use the shdr_dom() variant for response headers sent by the
+  server.
+
+hdr_end <string>
+hdr_end(header) <string>
+  Returns true when one of the headers ends with one of the strings. See "hdr"
+  for more information on header matching. Use the shdr_end() variant for
+  response headers sent by the server.
+
+hdr_ip <ip_address>
+hdr_ip(header) <ip_address>
+  Returns true when one of the headers' values contains an IP address matching
+  <ip_address>. This is mainly used with headers such as X-Forwarded-For or
+  X-Client-IP. See "hdr" for more information on header matching. Use the
+  shdr_ip() variant for response headers sent by the server.
+
+hdr_len <integer>
+hdr_len(<header>) <integer>
+  Returns true when at least one of the headers has a length which matches the
+  values or ranges specified. This may be used to detect empty or too large
+  headers. See "hdr" for more information on header matching. Use the
+  shdr_len() variant for response headers sent by the server.
+
+hdr_reg <regex>
+hdr_reg(header) <regex>
+  Returns true when one of the headers matches of the regular expressions. It
+  can be used at any time, but it is important to remember that regex matching
+  is slower than other methods. See also other "hdr_" criteria, as well as
+  "hdr" for more information on header matching. Use the shdr_reg() variant for
+  response headers sent by the server.
+
+hdr_sub <string>
+hdr_sub(header) <string>
+  Returns true when one of the headers contains one of the strings. See "hdr"
+  for more information on header matching. Use the shdr_sub() variant for
+  response headers sent by the server.
+
+hdr_val <integer>
+hdr_val(header) <integer>
+  Returns true when one of the headers starts with a number which matches the
+  values or ranges specified. This may be used to limit content-length to
+  acceptable values for example. See "hdr" for more information on header
+  matching. Use the shdr_val() variant for response headers sent by the server.
+
+http_auth(userlist)
+http_auth_group(userlist) <group> [<group>]*
+  Returns true when authentication data received from the client matches
+  username & password stored on the userlist. It is also possible to
+  use http_auth_group to check if the user is assigned to at least one
+  of specified groups.
+
+  Currently only http basic auth is supported.
+
+http_first_req
+  Returns true when the request being processed is the first one of the
+  connection. This can be used to add or remove headers that may be missing
+  from some requests when a request is not the first one, or even to perform
+  some specific ACL checks only on the first request.
+
+method <string>
+  Applies to the method in the HTTP request, eg: "GET". Some predefined ACL
+  already check for most common methods.
+
+path <string>
+  Returns true when the path part of the request, which starts at the first
+  slash and ends before the question mark, equals one of the strings. It may be
+  used to match known files, such as /favicon.ico.
+
+path_beg <string>
+  Returns true when the path begins with one of the strings. This can be used
+  to send certain directory names to alternative backends.
+
+path_dir <string>
+  Returns true when one of the strings is found isolated or delimited with
+  slashes in the path. This is used to perform filename or directory name
+  matching without the risk of wrong match due to colliding prefixes. See also
+  "url_dir" and "path_sub".
+
+path_dom <string>
+  Returns true when one of the strings is found isolated or delimited with dots
+  in the path. This may be used to perform domain name matching in proxy
+  requests. See also "path_sub" and "url_dom".
+
+path_end <string>
+  Returns true when the path ends with one of the strings. This may be used to
+  control file name extension.
+
+path_len <integer>
+  Returns true when the path length matches the values or ranges specified.
+  This may be used to detect abusive requests for instance.
+
+path_reg <regex>
+  Returns true when the path matches one of the regular expressions. It can be
+  used any time, but it is important to remember that regex matching is slower
+  than other methods. See also "url_reg" and all "path_" criteria.
+
+path_sub <string>
+  Returns true when the path contains one of the strings. It can be used to
+  detect particular patterns in paths, such as "../" for example. See also
+  "path_dir".
+
+req_ver <string>
+  Applies to the version string in the HTTP request, eg: "1.0". Some predefined
+  ACL already check for versions 1.0 and 1.1.
+
+status <integer>
+  Applies to the HTTP status code in the HTTP response, eg: "302". It can be
+  used to act on responses depending on status ranges, for instance, remove
+  any Location header if the response is not a 3xx.
+
+url <string>
+  Applies to the whole URL passed in the request. The only real use is to match
+  "*", for which there already is a predefined ACL.
+
+url_beg <string>
+  Returns true when the URL begins with one of the strings. This can be used to
+  check whether a URL begins with a slash or with a protocol scheme.
+
+url_dir <string>
+  Returns true when one of the strings is found isolated or delimited with
+  slashes in the URL. This is used to perform filename or directory name
+  matching without the risk of wrong match due to colliding prefixes. See also
+  "path_dir" and "url_sub".
+
+url_dom <string>
+  Returns true when one of the strings is found isolated or delimited with dots
+  in the URL. This is used to perform domain name matching without the risk of
+  wrong match due to colliding prefixes. See also "url_sub".
+
+url_end <string>
+  Returns true when the URL ends with one of the strings. It has very limited
+  use. "path_end" should be used instead for filename matching.
+
+url_ip <ip_address>
+  Applies to the IP address specified in the absolute URI in an HTTP request.
+  It can be used to prevent access to certain resources such as local network.
+  It is useful with option "http_proxy".
+
+url_len <integer>
+  Returns true when the url length matches the values or ranges specified. This
+  may be used to detect abusive requests for instance.
+
+url_port <integer>
+  Applies to the port specified in the absolute URI in an HTTP request. It can
+  be used to prevent access to certain resources. It is useful with option
+  "http_proxy". Note that if the port is not specified in the request, port 80
+  is assumed.
+
+url_reg <regex>
+  Returns true when the URL matches one of the regular expressions. It can be
+  used any time, but it is important to remember that regex matching is slower
+  than other methods. See also "path_reg" and all "url_" criteria.
+
+url_sub <string>
+  Returns true when the URL contains one of the strings. It can be used to
+  detect particular patterns in query strings for example. See also "path_sub".
+
+
+\end{verbatim}

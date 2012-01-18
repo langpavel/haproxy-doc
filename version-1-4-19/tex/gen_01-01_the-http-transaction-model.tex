@@ -1,0 +1,59 @@
+% This is generated content
+% Section 1.1.
+
+\section{The HTTP transaction model}
+
+\begin{verbatim}
+
+The HTTP protocol is transaction-driven. This means that each request will lead
+to one and only one response. Traditionally, a TCP connection is established
+from the client to the server, a request is sent by the client on the
+connection, the server responds and the connection is closed. A new request
+will involve a new connection :
+
+  [CON1] [REQ1] ... [RESP1] [CLO1] [CON2] [REQ2] ... [RESP2] [CLO2] ...
+
+In this mode, called the "HTTP close" mode, there are as many connection
+establishments as there are HTTP transactions. Since the connection is closed
+by the server after the response, the client does not need to know the content
+length.
+
+Due to the transactional nature of the protocol, it was possible to improve it
+to avoid closing a connection between two subsequent transactions. In this mode
+however, it is mandatory that the server indicates the content length for each
+response so that the client does not wait indefinitely. For this, a special
+header is used: "Content-length". This mode is called the "keep-alive" mode :
+
+  [CON] [REQ1] ... [RESP1] [REQ2] ... [RESP2] [CLO] ...
+
+Its advantages are a reduced latency between transactions, and less processing
+power required on the server side. It is generally better than the close mode,
+but not always because the clients often limit their concurrent connections to
+a smaller value.
+
+A last improvement in the communications is the pipelining mode. It still uses
+keep-alive, but the client does not wait for the first response to send the
+second request. This is useful for fetching large number of images composing a
+page :
+
+  [CON] [REQ1] [REQ2] ... [RESP1] [RESP2] [CLO] ...
+
+This can obviously have a tremendous benefit on performance because the network
+latency is eliminated between subsequent requests. Many HTTP agents do not
+correctly support pipelining since there is no way to associate a response with
+the corresponding request in HTTP. For this reason, it is mandatory for the
+server to reply in the exact same order as the requests were received.
+
+By default HAProxy operates in a tunnel-like mode with regards to persistent
+connections: for each connection it processes the first request and forwards
+everything else (including additional requests) to selected server. Once
+established, the connection is persisted both on the client and server
+sides. Use "option http-server-close" to preserve client persistent connections
+while handling every incoming request individually, dispatching them one after
+another to servers, in HTTP close mode. Use "option httpclose" to switch both
+sides to HTTP close mode. "option forceclose" and "option
+http-pretend-keepalive" help working around servers misbehaving in HTTP close
+mode.
+
+
+\end{verbatim}

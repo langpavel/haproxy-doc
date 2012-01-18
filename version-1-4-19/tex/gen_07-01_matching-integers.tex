@@ -1,0 +1,44 @@
+% This is generated content
+% Section 7.1.
+
+\section{Matching integers}
+
+\begin{verbatim}
+
+Matching integers is special in that ranges and operators are permitted. Note
+that integer matching only applies to positive values. A range is a value
+expressed with a lower and an upper bound separated with a colon, both of which
+may be omitted.
+
+For instance, "1024:65535" is a valid range to represent a range of
+unprivileged ports, and "1024:" would also work. "0:1023" is a valid
+representation of privileged ports, and ":1023" would also work.
+
+As a special case, some ACL functions support decimal numbers which are in fact
+two integers separated by a dot. This is used with some version checks for
+instance. All integer properties apply to those decimal numbers, including
+ranges and operators.
+
+For an easier usage, comparison operators are also supported. Note that using
+operators with ranges does not make much sense and is strongly discouraged.
+Similarly, it does not make much sense to perform order comparisons with a set
+of values.
+
+Available operators for integer matching are :
+
+  eq : true if the tested value equals at least one value
+  ge : true if the tested value is greater than or equal to at least one value
+  gt : true if the tested value is greater than at least one value
+  le : true if the tested value is less than or equal to at least one value
+  lt : true if the tested value is less than at least one value
+
+For instance, the following ACL matches any negative Content-Length header :
+
+  acl negative-length hdr_val(content-length) lt 0
+
+This one matches SSL versions between 3.0 and 3.1 (inclusive) :
+
+  acl sslv3 req_ssl_ver 3:3.1
+
+
+\end{verbatim}

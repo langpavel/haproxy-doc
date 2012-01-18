@@ -1,0 +1,58 @@
+% This is generated content
+% Section 7.8.
+
+\section{Pattern extraction}
+
+\begin{verbatim}
+
+The stickiness features relies on pattern extraction in the request and
+response. Sometimes the data needs to be converted first before being stored,
+for instance converted from ASCII to IP or upper case to lower case.
+
+All these operations of data extraction and conversion are defined as
+"pattern extraction rules". A pattern rule always has the same format. It
+begins with a single pattern fetch word, potentially followed by a list of
+arguments within parenthesis then an optional list of transformations. As
+much as possible, the pattern fetch functions use the same name as their
+equivalent used in ACLs.
+
+The list of currently supported pattern fetch functions is the following :
+
+  src          This is the source IPv4 address of the client of the session.
+               It is of type IP and only works with such tables.
+
+  dst          This is the destination IPv4 address of the session on the
+               client side, which is the address the client connected to.
+               It can be useful when running in transparent mode. It is of
+               type IP and only works with such tables.
+
+  dst_port     This is the destination TCP port of the session on the client
+               side, which is the port the client connected to. This might be
+               used when running in transparent mode or when assigning dynamic
+               ports to some clients for a whole application session. It is of
+               type integer and only works with such tables.
+
+  hdr(name)    This extracts the last occurrence of header <name> in an HTTP
+               request and converts it to an IP address. This IP address is
+               then used to match the table. A typical use is with the
+               x-forwarded-for header.
+
+
+The currently available list of transformations include :
+
+  lower        Convert a string pattern to lower case. This can only be placed
+               after a string pattern fetch function or after a conversion
+               function returning a string type. The result is of type string.
+
+  upper        Convert a string pattern to upper case. This can only be placed
+               after a string pattern fetch function or after a conversion
+               function returning a string type. The result is of type string.
+
+  ipmask(mask) Apply a mask to an IPv4 address, and use the result for lookups
+               and storage. This can be used to make all hosts within a
+               certain mask to share the same table entries and as such use
+               the same server. The mask can be passed in dotted form (eg:
+               255.255.255.0) or in CIDR form (eg: 24).
+
+
+\end{verbatim}

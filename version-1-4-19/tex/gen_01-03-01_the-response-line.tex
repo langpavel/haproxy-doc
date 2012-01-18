@@ -1,0 +1,51 @@
+% This is generated content
+% Section 1.3.1.
+
+\subsection{The Response line}
+
+\begin{verbatim}
+
+Line 1 is the "response line". It is always composed of 3 fields :
+
+  - a version tag : HTTP/1.1
+  - a status code : 200
+  - a reason      : OK
+
+The status code is always 3-digit. The first digit indicates a general status :
+ - 1xx = informational message to be skipped (eg: 100, 101)
+ - 2xx = OK, content is following   (eg: 200, 206)
+ - 3xx = OK, no content following   (eg: 302, 304)
+ - 4xx = error caused by the client (eg: 401, 403, 404)
+ - 5xx = error caused by the server (eg: 500, 502, 503)
+
+Please refer to RFC2616 for the detailed meaning of all such codes. The
+"reason" field is just a hint, but is not parsed by clients. Anything can be
+found there, but it's a common practice to respect the well-established
+messages. It can be composed of one or multiple words, such as "OK", "Found",
+or "Authentication Required".
+
+Haproxy may emit the following status codes by itself :
+
+  Code  When / reason
+   200  access to stats page, and when replying to monitoring requests
+   301  when performing a redirection, depending on the configured code
+   302  when performing a redirection, depending on the configured code
+   303  when performing a redirection, depending on the configured code
+   400  for an invalid or too large request
+   401  when an authentication is required to perform the action (when
+        accessing the stats page)
+   403  when a request is forbidden by a "block" ACL or "reqdeny" filter
+   408  when the request timeout strikes before the request is complete
+   500  when haproxy encounters an unrecoverable internal error, such as a
+        memory allocation failure, which should never happen
+   502  when the server returns an empty, invalid or incomplete response, or
+        when an "rspdeny" filter blocks the response.
+   503  when no server was available to handle the request, or in response to
+        monitoring requests which match the "monitor fail" condition
+   504  when the response timeout strikes before the server responds
+
+The error 4xx and 5xx codes above may be customized (see "errorloc" in section
+4.2).
+
+
+\end{verbatim}

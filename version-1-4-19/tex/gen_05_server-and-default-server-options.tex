@@ -1,0 +1,290 @@
+% This is generated content
+% Section 5.
+
+\chapter{Server and default-server options}
+
+\begin{verbatim}
+
+The "server" and "default-server" keywords support a certain number of settings
+which are all passed as arguments on the server line. The order in which those
+arguments appear does not count, and they are all optional. Some of those
+settings are single words (booleans) while others expect one or several values
+after them. In this case, the values must immediately follow the setting name.
+Except default-server, all those settings must be specified after the server's
+address if they are used:
+
+  server <name> <address>[:port] [settings ...]
+  default-server [settings ...]
+
+The currently supported settings are the following ones.
+
+addr <ipv4>
+  Using the "addr" parameter, it becomes possible to use a different IP address
+  to send health-checks. On some servers, it may be desirable to dedicate an IP
+  address to specific component able to perform complex tests which are more
+  suitable to health-checks than the application. This parameter is ignored if
+  the "check" parameter is not set. See also the "port" parameter.
+
+  Supported in default-server: No
+
+backup
+  When "backup" is present on a server line, the server is only used in load
+  balancing when all other non-backup servers are unavailable. Requests coming
+  with a persistence cookie referencing the server will always be served
+  though. By default, only the first operational backup server is used, unless
+  the "allbackups" option is set in the backend. See also the "allbackups"
+  option.
+
+  Supported in default-server: No
+
+check
+  This option enables health checks on the server. By default, a server is
+  always considered available. If "check" is set, the server will receive
+  periodic health checks to ensure that it is really able to serve requests.
+  The default address and port to send the tests to are those of the server,
+  and the default source is the same as the one defined in the backend. It is
+  possible to change the address using the "addr" parameter, the port using the
+  "port" parameter, the source address using the "source" address, and the
+  interval and timers using the "inter", "rise" and "fall" parameters. The
+  request method is define in the backend using the "httpchk", "smtpchk",
+  "mysql-check" and "ssl-hello-chk" options. Please refer to those options and
+  parameters for more information.
+
+  Supported in default-server: No
+
+cookie <value>
+  The "cookie" parameter sets the cookie value assigned to the server to
+  <value>. This value will be checked in incoming requests, and the first
+  operational server possessing the same value will be selected. In return, in
+  cookie insertion or rewrite modes, this value will be assigned to the cookie
+  sent to the client. There is nothing wrong in having several servers sharing
+  the same cookie value, and it is in fact somewhat common between normal and
+  backup servers. See also the "cookie" keyword in backend section.
+
+  Supported in default-server: No
+
+disabled
+  The "disabled" keyword starts the server in the "disabled" state. That means
+  that it is marked down in maintenance mode, and no connection other than the
+  ones allowed by persist mode will reach it. It is very well suited to setup
+  new servers, because normal traffic will never reach them, while it is still
+  possible to test the service by making use of the force-persist mechanism.
+
+  Supported in default-server: No
+
+error-limit <count>
+  If health observing is enabled, the "error-limit" parameter specifies the
+  number of consecutive errors that triggers event selected by the "on-error"
+  option. By default it is set to 10 consecutive errors.
+
+  Supported in default-server: Yes
+
+  See also the "check", "error-limit" and "on-error".
+
+fall <count>
+  The "fall" parameter states that a server will be considered as dead after
+  <count> consecutive unsuccessful health checks. This value defaults to 3 if
+  unspecified. See also the "check", "inter" and "rise" parameters.
+
+  Supported in default-server: Yes
+
+id <value>
+  Set a persistent ID for the server. This ID must be positive and unique for
+  the proxy. An unused ID will automatically be assigned if unset. The first
+  assigned value will be 1. This ID is currently only returned in statistics.
+
+  Supported in default-server: No
+
+inter <delay>
+fastinter <delay>
+downinter <delay>
+  The "inter" parameter sets the interval between two consecutive health checks
+  to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.
+  It is also possible to use "fastinter" and "downinter" to optimize delays
+  between checks depending on the server state :
+
+             Server state            |             Interval used
+    ---------------------------------+-----------------------------------------
+     UP 100% (non-transitional)      | "inter"
+    ---------------------------------+-----------------------------------------
+     Transitionally UP (going down), |
+     Transitionally DOWN (going up), | "fastinter" if set, "inter" otherwise.
+     or yet unchecked.               |
+    ---------------------------------+-----------------------------------------
+     DOWN 100% (non-transitional)    | "downinter" if set, "inter" otherwise.
+    ---------------------------------+-----------------------------------------
+
+  Just as with every other time-based parameter, they can be entered in any
+  other explicit unit among { us, ms, s, m, h, d }. The "inter" parameter also
+  serves as a timeout for health checks sent to servers if "timeout check" is
+  not set. In order to reduce "resonance" effects when multiple servers are
+  hosted on the same hardware, the health-checks of all servers are started
+  with a small time offset between them. It is also possible to add some random
+  noise in the health checks interval using the global "spread-checks"
+  keyword. This makes sense for instance when a lot of backends use the same
+  servers.
+
+  Supported in default-server: Yes
+
+maxconn <maxconn>
+  The "maxconn" parameter specifies the maximal number of concurrent
+  connections that will be sent to this server. If the number of incoming
+  concurrent requests goes higher than this value, they will be queued, waiting
+  for a connection to be released. This parameter is very important as it can
+  save fragile servers from going down under extreme loads. If a "minconn"
+  parameter is specified, the limit becomes dynamic. The default value is "0"
+  which means unlimited. See also the "minconn" and "maxqueue" parameters, and
+  the backend's "fullconn" keyword.
+
+  Supported in default-server: Yes
+
+maxqueue <maxqueue>
+  The "maxqueue" parameter specifies the maximal number of connections which
+  will wait in the queue for this server. If this limit is reached, next
+  requests will be redispatched to other servers instead of indefinitely
+  waiting to be served. This will break persistence but may allow people to
+  quickly re-log in when the server they try to connect to is dying. The
+  default value is "0" which means the queue is unlimited. See also the
+  "maxconn" and "minconn" parameters.
+
+  Supported in default-server: Yes
+
+minconn <minconn>
+  When the "minconn" parameter is set, the maxconn limit becomes a dynamic
+  limit following the backend's load. The server will always accept at least
+  <minconn> connections, never more than <maxconn>, and the limit will be on
+  the ramp between both values when the backend has less than <fullconn>
+  concurrent connections. This makes it possible to limit the load on the
+  server during normal loads, but push it further for important loads without
+  overloading the server during exceptional loads. See also the "maxconn"
+  and "maxqueue" parameters, as well as the "fullconn" backend keyword.
+
+  Supported in default-server: Yes
+
+observe <mode>
+  This option enables health adjusting based on observing communication with
+  the server. By default this functionality is disabled and enabling it also
+  requires to enable health checks. There are two supported modes: "layer4" and
+  "layer7". In layer4 mode, only successful/unsuccessful tcp connections are
+  significant. In layer7, which is only allowed for http proxies, responses
+  received from server are verified, like valid/wrong http code, unparsable
+  headers, a timeout, etc.
+
+  Supported in default-server: No
+
+  See also the "check", "on-error" and "error-limit".
+
+on-error <mode>
+  Select what should happen when enough consecutive errors are detected.
+  Currently, four modes are available:
+  - fastinter: force fastinter
+  - fail-check: simulate a failed check, also forces fastinter (default)
+  - sudden-death: simulate a pre-fatal failed health check, one more failed
+    check will mark a server down, forces fastinter
+  - mark-down: mark the server immediately down and force fastinter
+
+  Supported in default-server: Yes
+
+  See also the "check", "observe" and "error-limit".
+
+port <port>
+  Using the "port" parameter, it becomes possible to use a different port to
+  send health-checks. On some servers, it may be desirable to dedicate a port
+  to a specific component able to perform complex tests which are more suitable
+  to health-checks than the application. It is common to run a simple script in
+  inetd for instance. This parameter is ignored if the "check" parameter is not
+  set. See also the "addr" parameter.
+
+  Supported in default-server: Yes
+
+redir <prefix>
+  The "redir" parameter enables the redirection mode for all GET and HEAD
+  requests addressing this server. This means that instead of having HAProxy
+  forward the request to the server, it will send an "HTTP 302" response with
+  the "Location" header composed of this prefix immediately followed by the
+  requested URI beginning at the leading '/' of the path component. That means
+  that no trailing slash should be used after <prefix>. All invalid requests
+  will be rejected, and all non-GET or HEAD requests will be normally served by
+  the server. Note that since the response is completely forged, no header
+  mangling nor cookie insertion is possible in the response. However, cookies in
+  requests are still analysed, making this solution completely usable to direct
+  users to a remote location in case of local disaster. Main use consists in
+  increasing bandwidth for static servers by having the clients directly
+  connect to them. Note: never use a relative location here, it would cause a
+  loop between the client and HAProxy!
+
+  Example :  server srv1 192.168.1.1:80 redir http://image1.mydomain.com check
+
+  Supported in default-server: No
+
+rise <count>
+  The "rise" parameter states that a server will be considered as operational
+  after <count> consecutive successful health checks. This value defaults to 2
+  if unspecified. See also the "check", "inter" and "fall" parameters.
+
+  Supported in default-server: Yes
+
+slowstart <start_time_in_ms>
+  The "slowstart" parameter for a server accepts a value in milliseconds which
+  indicates after how long a server which has just come back up will run at
+  full speed. Just as with every other time-based parameter, it can be entered
+  in any other explicit unit among { us, ms, s, m, h, d }. The speed grows
+  linearly from 0 to 100% during this time. The limitation applies to two
+  parameters :
+
+  - maxconn: the number of connections accepted by the server will grow from 1
+    to 100% of the usual dynamic limit defined by (minconn,maxconn,fullconn).
+
+  - weight: when the backend uses a dynamic weighted algorithm, the weight
+    grows linearly from 1 to 100%. In this case, the weight is updated at every
+    health-check. For this reason, it is important that the "inter" parameter
+    is smaller than the "slowstart", in order to maximize the number of steps.
+
+  The slowstart never applies when haproxy starts, otherwise it would cause
+  trouble to running servers. It only applies when a server has been previously
+  seen as failed.
+
+  Supported in default-server: Yes
+
+source <addr>[:<pl>[-<ph>]] [usesrc { <addr2>[:<port2>] | client | clientip } ]
+source <addr>[:<port>] [usesrc { <addr2>[:<port2>] | hdr_ip(<hdr>[,<occ>]) } ]
+source <addr>[:<pl>[-<ph>]] [interface <name>] ...
+  The "source" parameter sets the source address which will be used when
+  connecting to the server. It follows the exact same parameters and principle
+  as the backend "source" keyword, except that it only applies to the server
+  referencing it. Please consult the "source" keyword for details.
+
+  Additionally, the "source" statement on a server line allows one to specify a
+  source port range by indicating the lower and higher bounds delimited by a
+  dash ('-'). Some operating systems might require a valid IP address when a
+  source port range is specified. It is permitted to have the same IP/range for
+  several servers. Doing so makes it possible to bypass the maximum of 64k
+  total concurrent connections. The limit will then reach 64k connections per
+  server.
+
+  Supported in default-server: No
+
+track [<proxy>/]<server>
+  This option enables ability to set the current state of the server by
+  tracking another one. Only a server with checks enabled can be tracked
+  so it is not possible for example to track a server that tracks another
+  one. If <proxy> is omitted the current one is used. If disable-on-404 is
+  used, it has to be enabled on both proxies.
+
+  Supported in default-server: No
+
+weight <weight>
+  The "weight" parameter is used to adjust the server's weight relative to
+  other servers. All servers will receive a load proportional to their weight
+  relative to the sum of all weights, so the higher the weight, the higher the
+  load. The default weight is 1, and the maximal value is 256. A value of 0
+  means the server will not participate in load-balancing but will still accept
+  persistent connections. If this parameter is used to distribute the load
+  according to server's capacity, it is recommended to start with values which
+  can both grow and shrink, for instance between 10 and 100 to leave enough
+  room above and below for later adjustments.
+
+  Supported in default-server: Yes
+
+
+\end{verbatim}

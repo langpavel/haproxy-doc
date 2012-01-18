@@ -1,0 +1,36 @@
+% This is generated content
+% Section 7.6.
+
+\section{Pre-defined ACLs}
+
+\begin{verbatim}
+
+Some predefined ACLs are hard-coded so that they do not have to be declared in
+every frontend which needs them. They all have their names in upper case in
+order to avoid confusion. Their equivalence is provided below.
+
+ACL name          Equivalent to                Usage
+---------------+-----------------------------+---------------------------------
+FALSE            always_false                  never match
+HTTP             req_proto_http                match if protocol is valid HTTP
+HTTP_1.0         req_ver 1.0                   match HTTP version 1.0
+HTTP_1.1         req_ver 1.1                   match HTTP version 1.1
+HTTP_CONTENT     hdr_val(content-length) gt 0  match an existing content-length
+HTTP_URL_ABS     url_reg ^[^/:]*://            match absolute URL with scheme
+HTTP_URL_SLASH   url_beg /                     match URL beginning with "/"
+HTTP_URL_STAR    url     *                     match URL equal to "*"
+LOCALHOST        src 127.0.0.1/8               match connection from local host
+METH_CONNECT     method  CONNECT               match HTTP CONNECT method
+METH_GET         method  GET HEAD              match HTTP GET or HEAD method
+METH_HEAD        method  HEAD                  match HTTP HEAD method
+METH_OPTIONS     method  OPTIONS               match HTTP OPTIONS method
+METH_POST        method  POST                  match HTTP POST method
+METH_TRACE       method  TRACE                 match HTTP TRACE method
+RDP_COOKIE       req_rdp_cookie_cnt gt 0       match presence of an RDP cookie
+REQ_CONTENT      req_len gt 0                  match data in the request buffer
+TRUE             always_true                   always match
+WAIT_END         wait_end                      wait for end of content analysis
+---------------+-----------------------------+---------------------------------
+
+
+\end{verbatim}

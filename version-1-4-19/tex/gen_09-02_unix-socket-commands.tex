@@ -1,0 +1,215 @@
+% This is generated content
+% Section 9.2.
+
+\section{Unix Socket commands}
+
+\begin{verbatim}
+
+The following commands are supported on the UNIX stats socket ; all of them
+must be terminated by a line feed. The socket supports pipelining, so that it
+is possible to chain multiple commands at once provided they are delimited by
+a semi-colon or a line feed, although the former is more reliable as it has no
+risk of being truncated over the network. The responses themselves will each be
+followed by an empty line, so it will be easy for an external script to match a
+given response with a given request. By default one command line is processed
+then the connection closes, but there is an interactive allowing multiple lines
+to be issued one at a time.
+
+It is important to understand that when multiple haproxy processes are started
+on the same sockets, any process may pick up the request and will output its
+own stats.
+
+clear counters
+  Clear the max values of the statistics counters in each proxy (frontend &
+  backend) and in each server. The cumulated counters are not affected. This
+  can be used to get clean counters after an incident, without having to
+  restart nor to clear traffic counters. This command is restricted and can
+  only be issued on sockets configured for levels "operator" or "admin".
+
+clear counters all
+  Clear all statistics counters in each proxy (frontend & backend) and in each
+  server. This has the same effect as restarting. This command is restricted
+  and can only be issued on sockets configured for level "admin".
+
+disable server <backend>/<server>
+  Mark the server DOWN for maintenance. In this mode, no more checks will be
+  performed on the server until it leaves maintenance.
+  If the server is tracked by other servers, those servers will be set to DOWN
+  during the maintenance.
+
+  In the statistics page, a server DOWN for maintenance will appear with a
+  "MAINT" status, its tracking servers with the "MAINT(via)" one.
+
+  Both the backend and the server may be specified either by their name or by
+  their numeric ID, prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+enable server <backend>/<server>
+  If the server was previously marked as DOWN for maintenance, this marks the
+  server UP and checks are re-enabled.
+
+  Both the backend and the server may be specified either by their name or by
+  their numeric ID, prefixed with a sharp ('#').
+
+  This command is restricted and can only be issued on sockets configured for
+  level "admin".
+
+get weight <backend>/<server>
+  Report the current weight and the initial weight of server <server> in
+  backend <backend> or an error if either doesn't exist. The initial weight is
+  the one that appears in the configuration file. Both are normally equal
+  unless the current weight has been changed. Both the backend and the server
+  may be specified either by their name or by their numeric ID, prefixed with a
+  sharp ('#').
+
+help
+  Print the list of known keywords and their basic usage. The same help screen
+  is also displayed for unknown commands.
+
+prompt
+  Toggle the prompt at the beginning of the line and enter or leave interactive
+  mode. In interactive mode, the connection is not closed after a command
+  completes. Instead, the prompt will appear again, indicating the user that
+  the interpreter is waiting for a new command. The prompt consists in a right
+  angle bracket followed by a space "> ". This mode is particularly convenient
+  when one wants to periodically check information such as stats or errors.
+  It is also a good idea to enter interactive mode before issuing a "help"
+  command.
+
+quit
+  Close the connection when in interactive mode.
+
+set timeout cli <delay>
+  Change the CLI interface timeout for current connection. This can be useful
+  during long debugging sessions where the user needs to constantly inspect
+  some indicators without being disconnected. The delay is passed in seconds.
+
+set weight <backend>/<server> <weight>[%]
+  Change a server's weight to the value passed in argument. If the value ends
+  with the '%' sign, then the new weight will be relative to the initially
+  configured weight. Relative weights are only permitted between 0 and 100%,
+  and absolute weights are permitted between 0 and 256. Servers which are part
+  of a farm running a static load-balancing algorithm have stricter limitations
+  because the weight cannot change once set. Thus for these servers, the only
+  accepted values are 0 and 100% (or 0 and the initial weight). Changes take
+  effect immediately, though certain LB algorithms require a certain amount of
+  requests to consider changes. A typical usage of this command is to disable
+  a server during an update by setting its weight to zero, then to enable it
+  again after the update by setting it back to 100%. This command is restricted
+  and can only be issued on sockets configured for level "admin". Both the
+  backend and the server may be specified either by their name or by their
+  numeric ID, prefixed with a sharp ('#').
+
+show errors [<iid>]
+  Dump last known request and response errors collected by frontends and
+  backends. If <iid> is specified, the limit the dump to errors concerning
+  either frontend or backend whose ID is <iid>. This command is restricted
+  and can only be issued on sockets configured for levels "operator" or
+  "admin".
+
+  The errors which may be collected are the last request and response errors
+  caused by protocol violations, often due to invalid characters in header
+  names. The report precisely indicates what exact character violated the
+  protocol. Other important information such as the exact date the error was
+  detected, frontend and backend names, the server name (when known), the
+  internal session ID and the source address which has initiated the session
+  are reported too.
+
+  All characters are returned, and non-printable characters are encoded. The
+  most common ones (\t = 9, \n = 10, \r = 13 and \e = 27) are encoded as one
+  letter following a backslash. The backslash itself is encoded as '\\' to
+  avoid confusion. Other non-printable characters are encoded '\xNN' where
+  NN is the two-digits hexadecimal representation of the character's ASCII
+  code.
+
+  Lines are prefixed with the position of their first character, starting at 0
+  for the beginning of the buffer. At most one input line is printed per line,
+  and large lines will be broken into multiple consecutive output lines so that
+  the output never goes beyond 79 characters wide. It is easy to detect if a
+  line was broken, because it will not end with '\n' and the next line's offset
+  will be followed by a '+' sign, indicating it is a continuation of previous
+  line.
+
+  Example :
+    >>> $ echo "show errors" | socat stdio /tmp/sock1
+        [04/Mar/2009:15:46:56.081] backend http-in (#2) : invalid response
+          src 127.0.0.1, session #54, frontend fe-eth0 (#1), server s2 (#1)
+          response length 213 bytes, error at position 23:
+
+          00000  HTTP/1.0 200 OK\r\n
+          00017  header/bizarre:blah\r\n
+          00038  Location: blah\r\n
+          00054  Long-line: this is a very long line which should b
+          00104+ e broken into multiple lines on the output buffer,
+          00154+  otherwise it would be too large to print in a ter
+          00204+ minal\r\n
+          00211  \r\n
+
+    In the example above, we see that the backend "http-in" which has internal
+    ID 2 has blocked an invalid response from its server s2 which has internal
+    ID 1. The request was on session 54 initiated by source 127.0.0.1 and
+    received by frontend fe-eth0 whose ID is 1. The total response length was
+    213 bytes when the error was detected, and the error was at byte 23. This
+    is the slash ('/') in header name "header/bizarre", which is not a valid
+    HTTP character for a header name.
+
+show info
+  Dump info about haproxy status on current process.
+
+show sess
+  Dump all known sessions. Avoid doing this on slow connections as this can
+  be huge. This command is restricted and can only be issued on sockets
+  configured for levels "operator" or "admin".
+
+show sess <id>
+  Display a lot of internal information about the specified session identifier.
+  This identifier is the first field at the beginning of the lines in the dumps
+  of "show sess" (it corresponds to the session pointer). Those information are
+  useless to most users but may be used by haproxy developers to troubleshoot a
+  complex bug. The output format is intentionally not documented so that it can
+  freely evolve depending on demands.
+
+show stat [<iid> <type> <sid>]
+  Dump statistics in the CSV format. By passing <id>, <type> and <sid>, it is
+  possible to dump only selected items :
+    - <iid> is a proxy ID, -1 to dump everything
+    - <type> selects the type of dumpable objects : 1 for frontends, 2 for
+       backends, 4 for servers, -1 for everything. These values can be ORed,
+       for example:
+          1 + 2     = 3   -> frontend + backend.
+          1 + 2 + 4 = 7   -> frontend + backend + server.
+    - <sid> is a server ID, -1 to dump everything from the selected proxy.
+
+  Example :
+    >>> $ echo "show info;show stat" | socat stdio unix-connect:/tmp/sock1
+        Name: HAProxy
+        Version: 1.4-dev2-49
+        Release_date: 2009/09/23
+        Nbproc: 1
+        Process_num: 1
+        (...)
+
+        # pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bout,dreq,  (...)
+        stats,FRONTEND,,,0,0,1000,0,0,0,0,0,0,,,,,OPEN,,,,,,,,,1,1,0, (...)
+        stats,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,0,0,0,,0,250,(...)
+        (...)
+        www1,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,1,1,0,,0,250, (...)
+
+        $
+
+    Here, two commands have been issued at once. That way it's easy to find
+    which process the stats apply to in multi-process mode. Notice the empty
+    line after the information output which marks the end of the first block.
+    A similar empty line appears at the end of the second block (stats) so that
+    the reader knows the output has not been truncated.
+
+
+/*
+ * Local variables:
+ *  fill-column: 79
+ * End:
+ */
+
+\end{verbatim}
