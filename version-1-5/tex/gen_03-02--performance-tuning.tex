@@ -85,6 +85,17 @@ tune.chksize <number>
   build time. It is not recommended to change this value, but to use better
   checks whenever possible.
 
+tune.http.maxhdr <number>
+  Sets the maximum number of headers in a request. When a request comes with a
+  number of headers greater than this value (including the first line), it is
+  rejected with a "400 Bad Request" status code. Similarly, too large responses
+  are blocked with "502 Bad Gateway". The default value is 101, which is enough
+  for all usages, considering that the widely deployed Apache server uses the
+  same limit. It can be useful to push this limit further to temporarily allow
+  a buggy application to work by the time it gets fixed. Keep in mind that each
+  new header consumes 32bits of memory for each session, so don't push this
+  limit too high.
+
 tune.maxaccept <number>
   Sets the maximum number of consecutive accepts that a process may perform on
   a single wake up. High values give higher priority to high connection rates,
@@ -113,6 +124,14 @@ tune.maxrewrite <number>
   to about 1024. It is automatically readjusted to half of bufsize if it is
   larger than that. This means you don't have to worry about it when changing
   bufsize.
+
+tune.pipesize <number>
+  Sets the kernel pipe buffer size to this size (in bytes). By default, pipes
+  are the default size for the system. But sometimes when using TCP splicing,
+  it can improve performance to increase pipe sizes, especially if it is
+  suspected that pipes are not filled and that many calls to splice() are
+  performed. This has an impact on the kernel's memory footprint, so this must
+  not be changed if impacts are not understood.
 
 tune.rcvbuf.client <number>
 tune.rcvbuf.server <number>

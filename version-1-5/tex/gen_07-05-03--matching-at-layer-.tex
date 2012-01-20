@@ -69,6 +69,13 @@ hdr_ip(<header>) <ip_address>
   X-Client-IP. See "hdr" for more information on header matching. Use the
   shdr_ip() variant for response headers sent by the server.
 
+hdr_len <integer>
+hdr_len(<header>) <integer>
+  Returns true when at least one of the headers has a length which matches the
+  values or ranges specified. This may be used to detect empty or too large
+  headers. See "hdr" for more information on header matching. Use the
+  shdr_len() variant for response headers sent by the server.
+
 hdr_reg <regex>
 hdr_reg(<header>) <regex>
   Returns true when one of the headers matches of the regular expressions. It
@@ -99,7 +106,7 @@ http_auth_group(<userlist>) <group> [<group>]*
 
   Currently only http basic auth is supported.
 
-http_req_first
+http_first_req
   Returns true when the request being processed is the first one of the
   connection. This can be used to add or remove headers that may be missing
   from some requests when a request is not the first one, or even to perform
@@ -132,6 +139,10 @@ path_dom <string>
 path_end <string>
   Returns true when the path ends with one of the strings. This may be used to
   control file name extension.
+
+path_len <integer>
+  Returns true when the path length matches the values or ranges specified.
+  This may be used to detect abusive requests for instance.
 
 path_reg <regex>
   Returns true when the path matches one of the regular expressions. It can be
@@ -179,6 +190,10 @@ url_ip <ip_address>
   Applies to the IP address specified in the absolute URI in an HTTP request.
   It can be used to prevent access to certain resources such as local network.
   It is useful with option "http_proxy".
+
+url_len <integer>
+  Returns true when the url length matches the values or ranges specified. This
+  may be used to detect abusive requests for instance.
 
 url_port <integer>
   Applies to the port specified in the absolute URI in an HTTP request. It can

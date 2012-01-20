@@ -800,7 +800,9 @@ cookie <name> [ rewrite | insert | prefix ] [ indirect ] [ nocache ]
               requests so that the server still finds the cookie it emitted.
               Since all requests and responses are subject to being modified,
               this mode requires the HTTP close mode. The "prefix" keyword is
-              not compatible with "rewrite" and "insert".
+              not compatible with "rewrite" and "insert". Note: it is highly
+              recommended not to use "indirect" with "prefix", otherwise server
+              cookie updates would not be sent to clients.
 
     indirect  When this option is specified, no cookie will be emitted to a
               client which already has a valid one for the server which has
@@ -809,6 +811,9 @@ cookie <name> [ rewrite | insert | prefix ] [ indirect ] [ nocache ]
               "insert" mode, this will additionally remove cookies from the
               requests transmitted to the server, making the persistence
               mechanism totally transparent from an application point of view.
+              Note: it is highly recommended not to use "indirect" with
+              "prefix", otherwise server cookie updates would not be sent to
+              clients.
 
     nocache   This option is recommended in conjunction with the insert mode
               when there is a cache between the client and HAProxy, as it
@@ -1399,6 +1404,22 @@ http-request { allow | deny | auth [realm <realm>] }
   See also : "stats http-request", section 3.4 about userlists and section 7
              about ACL usage.
 
+http-send-name-header [<header>]
+  Add the server name to a request. Use the header string given by <header>
+
+  May be used in sections:   defaults | frontend | listen | backend
+                               yes    |    no    |   yes  |   yes
+
+  Arguments :
+
+    <header>  The header string to use to send the server name
+
+  The "http-send-name-header" statement causes the name of the target
+  server to be added to the headers of an HTTP request.  The name
+  is added with the header string proved.
+
+  See also : "server"
+
 id <value>
   Set a persistent ID to a proxy.
   May be used in sections :   defaults | frontend | listen | backend
@@ -1436,9 +1457,16 @@ ignore-persist { if | unless } <condition>
 
 log global
 log <address> <facility> [<level> [<minlevel>]]
+no log
   Enable per-instance logging of events and traffic.
   May be used in sections :   defaults | frontend | listen | backend
                                  yes   |    yes   |   yes  |   yes
+
+  Prefix :
+    no         should be used when the logger list must be flushed. For example,
+               if you don't want to inherit from the default logger list. This
+               prefix does not allow arguments.
+
   Arguments :
     global     should be used when the instance's logging parameters are the
                same as the global ones. This is the most common usage. "global"
@@ -1480,14 +1508,9 @@ log <address> <facility> [<level> [<minlevel>]]
 
                  emerg  alert  crit   err    warning notice info  debug
 
-  Note that up to two "log" entries may be specified per instance. However, if
-  "log global" is used and if the "global" section already contains 2 log
-  entries, then additional log entries will be ignored.
-
-  Also, it is important to keep in mind that it is the frontend which decides
-  what to log from a connection, and that in case of content switching, the log
-  entries from the backend will be ignored. Connections are logged at level
-  "info".
+  It is important to keep in mind that it is the frontend which decides what to
+  log from a connection, and that in case of content switching, the log entries
+  from the backend will be ignored. Connections are logged at level "info".
 
   However, backend log declaration define how and where servers status changes
   will be logged. Level "notice" will be used to indicate a server going up,
@@ -1731,7 +1754,12 @@ no option accept-invalid-http-request
   server will emit invalid header names for whatever reason (configuration,
   implementation) and the issue will not be immediately fixed. In such a case,
   it is possible to relax HAProxy's header name parser to accept any character
-  even if that does not make sense, by specifying this option.
+  even if that does not make sense, by specifying this option. Similarly, the
+  list of characters allowed to appear in a URI is well defined by RFC3986, and
+  chars 0-31, 32 (space), 34 ('"'), 60 ('<'), 62 ('>'), 92 ('\'), 94 ('^'), 96
+  ('`'), 123 ('{'), 124 ('|'), 125 ('}'), 127 (delete) and anything above are
+  not allowed at all. Haproxy always blocks a number of them (0..32, 127). The
+  remaining ones are blocked by default unless this option is enabled.
 
   This option should never be enabled by default as it hides application bugs
   and open security breaches. It should only be deployed after a problem has
@@ -1739,7 +1767,8 @@ no option accept-invalid-http-request
 
   When this option is enabled, erroneous header names will still be accepted in
   requests, but the complete request will be captured in order to permit later
-  analysis using the "show errors" request on the UNIX stats socket. Doing this
+  analysis using the "show errors" request on the UNIX stats socket. Similarly,
+  requests containing invalid chars in the URI part will be logged. Doing this
   also helps confirming that the issue has been solved.
 
   If this option has been enabled in a "defaults" section, it can be disabled
@@ -3634,7 +3663,8 @@ server <name> <address>[:[port]] [param*]
                                  no    |    no    |   yes  |   yes
   Arguments :
     <name>    is the internal name assigned to this server. This name will
-              appear in logs and alerts.
+              appear in logs and alerts.  If "http-send-server-name" is
+              set, it will be added to the request header sent to the server.
 
     <address> is the IPv4 or IPv6 address of the server. Alternatively, a
               resolvable hostname is supported, but this name will be resolved
@@ -3661,7 +3691,8 @@ server <name> <address>[:[port]] [param*]
         server first  10.1.1.1:1080 cookie first  check inter 1000
         server second 10.1.1.2:1080 cookie second check inter 1000
 
-  See also: "default-server" and section 5 about server options
+  See also: "default-server", "http-send-name-header" and section 5 about
+             server options
 
 
 source <addr>[:<port>] [usesrc { <addr2>[:<port2>] | client | clientip } ]
