@@ -1,5 +1,6 @@
 % Section 2.3.
 
+\pagebreak[3]
 \section{Examples}
 
 \begin{listing}{1}
@@ -23,8 +24,10 @@ frontend http-in
 
 backend servers
     server server1 127.0.0.1:8000 maxconn 32
+\end{listing}
 
-
+\pagebreak[4]
+\begin{listing}{1}
 # The same configuration defined with a single listen block. Shorter but
 # less expressive, especially in HTTP mode.
 global
