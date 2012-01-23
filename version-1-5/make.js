@@ -81,7 +81,7 @@ var writeFiles = module.exports.writeFiles = function(parts) {
 		part = parts[i];
 		filenamebase = 'gen_' + part.chapterparts.map(function(p) {
 				return p.length === 1 ? '0'+p : p;
-			}).join('-') + '--' + part.title.toLowerCase().replace(/[^a-z()]+/g,'-');
+			}).join('-') + '--' + part.title.toLowerCase().replace(/[^a-z-]+/g,'-');
 
 		fs.writeFileSync('tex/'+filenamebase+'.tex', getTeXContent(part), 'utf8');
 

@@ -1,0 +1,210 @@
+% Section 3.1.
+
+\section{Process management and security}
+
+
+
+\begin{keywords}
+
+\kw{chroot} \param{jail dir}
+
+  Changes current directory to \param{jail dir} and performs a \verb|chroot()|
+  there before dropping privileges.
+  This increases the security level in case an unknown
+  vulnerability would be exploited, since it would make it very hard for the
+  attacker to exploit the system. This only works when the process is started
+  with superuser privileges. It is important to ensure that \param{jail dir}
+  is both empty and unwritable to anyone.
+
+\kw{daemon} \ 
+
+  Makes the process fork into background. This is the recommended mode of
+  operation. It is equivalent to the command line \cmdarg{-D} argument.
+  It can be disabled by the command line \cmdarg{-db} argument.
+
+\kw{gid} \param{number}
+
+  Changes the process' group ID to \param{number}. It is recommended that the group
+  ID is dedicated to HAProxy or to a small set of similar daemons. HAProxy must
+  be started with a user belonging to this group, or with superuser privileges.
+  See also \keyword{group} and \keyword{uid}.
+
+\kw{group} \param{group name}
+
+  Similar to \keyword{gid} but uses the GID of group name 
+  \param{group name} from \verb|/etc/group|.
+  See also \keyword{gid} and \keyword{user}.
+
+\kw{log} \param{address} \param{facility} \oparam{max level \oparam{min level}}
+
+  Adds a global syslog server. Up to two global servers can be defined. They
+  will receive logs for startups and exits, as well as all logs from proxies
+  configured with \keyword{log global}.
+
+  \param{address} can be one of:
+	\begin{itemize}
+	\item An IPv4 address optionally followed by a colon and a UDP port. If
+          no port is specified, 514 is used by default (the standard syslog
+          port).
+
+	\item An IPv6 address followed by a colon and optionally a UDP port. If
+          no port is specified, 514 is used by default (the standard syslog
+          port).
+
+	\item A filesystem path to a UNIX domain socket, keeping in mind
+          considerations for chroot (be sure the path is accessible inside
+          the chroot) and uid/gid (be sure the path is appropriately
+          writeable).
+	\end{itemize}
+
+  \param{facility} must be one of the 24 standard syslog facilities:
+	\begin{multicols}{4}\begin{itemize}
+	\item kern   \item user   \item mail   \item daemon \item auth   \item syslog \item lpr    \item news
+	\item uucp   \item cron   \item auth2  \item ftp    \item ntp    \item audit  \item alert  \item cron2
+	\item local0 \item local1 \item local2 \item local3 \item local4 \item local5 \item local6 \item local7
+	\end{itemize}\end{multicols}
+
+  An optional level can be specified to filter outgoing messages. By default,
+  all messages are sent. If a maximum level is specified, only messages with a
+  severity at least as important as this level will be sent. An optional minimum
+  level can be specified. If it is set, logs emitted with a more severe level
+  than this one will be capped to this level. This is used to avoid sending
+  \emph{emerg} messages on all terminals on some default syslog configurations.
+
+Eight levels are known:
+\begin{multicols}{4}\begin{itemize}
+	\item emerg  \item alert  \item crit   \item err    \item warning \item notice \item info  \item debug
+\end{itemize}\end{multicols}
+
+\kw{log-send-hostname} \oparam{string}
+
+  Sets the hostname field in the syslog header. If optional \oparam{string} parameter
+  is set the header is set to the string contents, otherwise uses the hostname
+  of the system. Generally used if one is not relaying logs through an
+  intermediate syslog server or for simply customizing the hostname printed in
+  the logs.
+
+\kw{log-tag} \param{string}
+
+  Sets the tag field in the syslog header to this string. It defaults to the
+  program name as launched from the command line, which usually is ``haproxy''.
+  Sometimes it can be useful to differentiate between multiple processes
+  running on the same host.
+
+\kw{nbproc} \param{number}
+
+  Creates \param{number} processes when going daemon. This requires the \keyword{daemon}
+  mode. By default, only one process is created, which is the recommended mode
+  of operation. For systems limited to small sets of file descriptors per
+  process, it may be needed to fork multiple daemons. 
+  \textbf{Using multiple processes is harder to debug and is really discouraged.}
+  See also \keyword{daemon}.
+
+\kw{pidfile} \param{pidfile}
+
+  Writes pids of all daemons into file \param{pidfile}. This option is equivalent to
+  the \cmdarg{-p} command line argument. The file must be accessible to the user
+  starting the process. See also \keyword{daemon}.
+
+\kw{stats socket} \param{path} \oparam{\{uid~|~user\} \param{uid}}
+  \oparam{\{gid~|~group\}~\param{gid}}
+  \oparam{mode~\param{mode}}
+  \oparam{level~\param{level}}
+
+  Creates a UNIX socket in stream mode at location <path>. Any previously
+  existing socket will be backed up then replaced. Connections to this socket
+  will return various statistics outputs and even allow some commands to be
+  issued. Please consult section 9.2 "Unix Socket commands" for more details.
+
+  An optional \param{level} parameter can be specified to restrict the nature of
+  the commands that can be issued on the socket:
+	\begin{description}
+	\item[user] is the least privileged level ; only non-sensitive stats can be
+      read, and no change is allowed. It would make sense on systems where it
+      is not easy to restrict access to the socket.
+
+	\item[operator] is the default level and fits most common uses. All data can
+      be read, and only non-sensitive changes are permitted (eg:~clear max
+      counters).
+
+	\item[admin] should be used with care, as everything is permitted (eg:~clear
+      all counters).
+	\end{description}
+
+  On platforms which support it, it is possible to restrict access to this
+  socket by specifying numerical IDs after \verb"uid" and \verb"gid", or valid user and
+  group names after the \verb"user" and \verb"group" keywords. It is also possible to
+  restrict permissions on the socket by passing an octal value after the \verb"mode"
+  keyword (same syntax as chmod). Depending on the platform, the permissions on
+  the socket will be inherited from the directory which hosts it, or from the
+  user the process is started with.
+
+\kw{stats timeout} \param{timeout}
+
+  The default timeout on the stats socket is set to 10 seconds. It is possible
+  to change this value with \keyword{stats timeout}. The value must be passed in
+  milliseconds, or be suffixed by a time unit among
+  (\texttt{us}, \texttt{ms}, \texttt{s}, \texttt{m}, \texttt{h}, \texttt{d}).
+  See \autoref{Time formats}.
+
+\kw{stats maxconn} \param{connections}
+
+  By default, the stats socket is limited to 10 concurrent connections. It is
+  possible to change this value with \keyword{stats maxconn}.
+
+\kw{uid} \param{number}
+
+  Changes the process' user ID to \param{number}. It is recommended that the user ID
+  is dedicated to HAProxy or to a small set of similar daemons. HAProxy must
+  be started with superuser privileges in order to be able to switch to another
+  one. See also \keyword{gid} and \keyword{user}.
+
+\kw{ulimit-n} \param{number}
+
+  Sets the maximum number of per-process file-descriptors to \param{number}.
+  By default, it is automatically computed, so it is recommended not to use this
+  option.
+
+\kw{unix-bind} \oparam{prefix~\param{prefix}}
+	\oparam{mode~\param{mode}}
+	\oparam{user~\param{user}} \oparam{uid~\param{uid}}
+	\oparam{group~\param{group}} \oparam{gid~\param{gid}}
+
+  Fixes common settings to UNIX listening sockets declared in \keyword{bind}
+  statements. This is mainly used to simplify declaration of those UNIX
+  sockets and reduce the risk of errors, since those settings are most commonly
+  required but are also process-specific. The \param{prefix} setting
+  can be used to force all socket path to be relative to that directory.
+  This might be needed to access another component's chroot. 
+  Note that those paths are resolved before haproxy chroots itself, so they
+  are absolute. The \param{mode}, \param{user}, \param{uid}, \param{group}
+  and \param{gid} all have the same meaning as their homonyms used by the
+  \keyword{bind} statement. If both are specified, the \keyword{bind} statement
+  has priority, meaning that the \keyword{unix-bind} settings may be seen as 
+  process-wide default settings.
+
+\kw{user} \param{user name}
+
+  Similar to \keyword{uid} but uses the UID of user name \param{user name}
+  from \verb|/etc/passwd|.
+  See also \keyword{uid}, \keyword{gid} and \keyword{group}.
+
+\kw{node} \param{name}
+
+  Only letters, digits, hyphen and underscore are allowed, like in DNS names.
+
+  This statement is useful in HA configurations where two or more processes or
+  servers share the same IP address. By setting a different node-name on all
+  nodes, it becomes easy to immediately spot what server is handling the
+  traffic.
+
+\kw{description} \param{text}
+
+  Add a text that describes the instance.
+
+  Please note that it is required to escape certain characters
+  (\CHAR{\#} for example) and this text is inserted into a html page so
+  you should avoid using \CHAR{<} and \CHAR{>} characters.
+
+\end{keywords}
+

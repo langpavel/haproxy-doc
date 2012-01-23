@@ -1,0 +1,64 @@
+% Section 3.
+
+\chapter{Global parameters}
+
+\hypertarget{keyword.global}{}
+Parameters in the \keyword{global} section are process-wide and often OS-specific. 
+They are generally set once for all and do not need being changed once correct.
+Some of them have command-line equivalents.
+
+The following keywords are supported in the \keyword{global} section:
+
+\begin{itemize}
+\item Process management and security
+	\begin{itemize}
+	\item \keyword{chroot}
+	\item \keyword{daemon}
+	\item \keyword{gid}
+	\item \keyword{group}
+	\item \keyword{log}
+	\item \keyword{log-send-hostname}
+	\item \keyword{nbproc}
+	\item \keyword{pidfile}
+	\item \keyword{uid}
+	\item \keyword{ulimit-n}
+	\item \keyword{user}
+	\item \keyword{stats}
+	\item \keyword{node}
+	\item \keyword{description}
+	\item \keyword{unix-bind}
+	\end{itemize}
+
+\item Performance tuning
+	\begin{itemize}
+	\item \keyword{maxconn}
+	\item \keyword{maxconnrate}
+	\item \keyword{maxpipes}
+	\item \keyword{noepoll}
+	\item \keyword{nokqueue}
+	\item \keyword{nopoll}
+	\item \keyword{nosepoll}
+	\item \keyword{nosplice}
+	\item \keyword{spread-checks}
+	\item \keyword{tune.bufsize}
+	\item \keyword{tune.chksize}
+	\item \keyword{tune.http.maxhdr}
+	\item \keyword{tune.maxaccept}
+	\item \keyword{tune.maxpollevents}
+	\item \keyword{tune.maxrewrite}
+	\item \keyword{tune.pipesize}
+	\item \keyword{tune.rcvbuf.client}
+	\item \keyword{tune.rcvbuf.server}
+	\item \keyword{tune.sndbuf.client}
+	\item \keyword{tune.sndbuf.server}
+	\end{itemize}
+
+\item Debugging
+	\begin{itemize}
+	\item \keyword{debug}
+	\item \keyword{quiet}
+	\end{itemize}
+
+\end{itemize}
+
+

@@ -1,15 +1,42 @@
-\documentclass[oneside,a4paper,11pt]{book}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage{amsmath,amssymb,amsfonts}	% Typical maths resource packages
+\documentclass[english,oneside,a4paper,10pt]{book}
+
+\usepackage{amsmath}
+
+%\usepackage{ifxetex}
+%\ifxetex
+%	\usepackage{fontspec}
+%	\usepackage{xunicode}
+%	\defaultfontfeatures{Mapping=tex-text} % To support LaTeX quoting style
+%	\setromanfont{sans}
+%\else
+	\usepackage{lmodern}
+	%\usepackage{palatino}
+	%\usepackage{newcent}
+	%\usepackage{bookman}
+	%\usepackage{cmbright}
+
+	\renewcommand{\ttdefault}{lmtt}
+
+%	\renewcommand*\rmdefault{ppl}\normalfont\upshape
+	\renewcommand*\rmdefault{iwona}\normalfont\upshape
+
+	\usepackage[utf8]{inputenc}
+	\usepackage[T1]{fontenc}
+%\fi
+
+\font\fontsymbol=bbding10 scaled \magstep3
+
 \usepackage{nicefrac}
 \usepackage{numprint}
 % \usepackage{graphics}					% Packages to allow inclusion of graphics
-\usepackage{color}						% For creating coloured text and background
-\usepackage[usenames,dvipsnames]{xcolor}
-\usepackage{hyperref}					% For creating hyperlinks in cross references
+% \usepackage{color}						% For creating coloured text and background
+\usepackage[usenames,dvipsnames,xcdraw]{xcolor}
 \usepackage{moreverb}
+\usepackage{multicol}
+%\usepackage{makeidx}
+%\usepackage{showidx}
+
+\usepackage{hyperref}					% For creating hyperlinks in cross references
 
 \definecolor{ColorLink}{cmyk}{1,0.2,0,0.7}
 \definecolor{ColorURL}{cmyk}{1,0.2,0,0.7}
@@ -35,11 +62,7 @@
 	linktoc=all
 }
 
-\makeindex
-
-\title{{\Huge \bf \href{http://haproxy.1wt.eu/}{HAProxy}}\\Configuration Manual\\version 1.5}
-\author{\href{mailto:w@1wt.eu}{Willy Tarreau}\\edited by \href{mailto:langpavel@phpskelet.org}{Pavel Lang} in \LaTeXe}
-\date{2011/09/10}
+\newcommand{\MyColorBox}[3]{\fcolorbox{#1}{#2}{#3}}
 
 \newcommand{\bslash}{$\backslash$}
 \newcommand{\gttt}{$>>>$}
@@ -48,9 +71,39 @@
 \newcommand{\httpstatus}[1]{\texttt{#1}}
 \newcommand{\httpcode}[1]{\texttt{#1}}
 \newcommand{\option}[1]{\texttt{option\nolinebreak[3] #1}}
-\newcommand{\CHAR}[1]{\texttt{\fcolorbox{Gray}{White}{#1}}}
+\newcommand{\CHAR}[1]{\MyColorBox{Gray}{Gray!10}{\texttt{#1}}}
 \newcommand{\RFC}[1]{\href{http://tools.ietf.org/html/rfc#1}{RFC~#1}}
-\newcommand{\keyword}[1]{\texttt{#1}}
+\newcommand{\keyword}[1]{\hyperlink{keyword.#1}{\texttt{#1}}}
+
+\newcommand{\cmdarg}[1]{\CHAR{#1}}
+
+\newcommand{\KEYWORD}[2]{\hypertarget{keyword.#1}{}\texttt{#2}}
+
+\newcommand{\kw}[1]{\item[\KEYWORD{#1}{#1}]}
+\newcommand{\oparam}[1]{{\tt [}{\tt \textsl{#1}}{\tt ]}}
+\newcommand{\param}[1]{\texttt{<#1>}}
+\newenvironment{keywords}%
+{\begin{description}}%
+{\end{description}}
+
+\long\def\note #1:#2\par{{\noindent\narrower\narrower{\hskip-35pt\hbox to 35pt{%
+\fontsymbol{\char28}\hfil}%
+\textbf{\textsc{{\large #1}}}}\hskip5pt {#2}\par\bigskip}}
+
+
+%\linespread{1.0}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.2ex plus 0.8ex minus 0.2ex}
+
+
+\title{{\Huge \bf \href{http://haproxy.1wt.eu/}{HAProxy}}\\Configuration Manual\\version 1.5}
+\author{\href{mailto:w@1wt.eu}{Willy Tarreau}\\%
+	edited by \href{mailto:langpavel@phpskelet.org}{Pavel Lang}}
+\date{2011/09/10}
+
+
+%\makeindex
+
 
 \begin{document}
 
@@ -72,9 +125,6 @@
 
 \clearpage
 
-\parskip 7pt							% sets spacing between paragraphs
-\parindent 0pt
-
 \pagestyle{headings}
 \pagenumbering{arabic}
 
@@ -91,6 +141,8 @@
 
 
 % \end{thebibliography}
+
+%\printindex
 
 % \include{index}
 % \addcontentsline{toc}{chapter}{Index}
