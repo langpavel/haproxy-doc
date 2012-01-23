@@ -1,25 +1,56 @@
-\documentclass[oneside]{book}
+\documentclass[oneside,a4paper,11pt]{book}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{amsmath,amssymb,amsfonts} % Typical maths resource packages
-\usepackage{graphics}                 % Packages to allow inclusion of graphics
-\usepackage{color}                    % For creating coloured text and background
-\usepackage{hyperref}                 % For creating hyperlinks in cross references
+\usepackage{amsmath,amssymb,amsfonts}	% Typical maths resource packages
+% \usepackage{graphics}					% Packages to allow inclusion of graphics
+\usepackage{color}						% For creating coloured text and background
 \usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{hyperref}					% For creating hyperlinks in cross references
+\usepackage{moreverb}
 
 \definecolor{ColorLink}{cmyk}{1,0.2,0,0.7}
-\hypersetup{colorlinks=true,linkcolor=ColorLink}
+\definecolor{ColorURL}{cmyk}{1,0.2,0,0.7}
+\hypersetup{
+	bookmarks=true,						% show bookmarks bar?
+	unicode=false,						% non-Latin characters in bookmarks
+	pdftoolbar=true,					% show Acrobat’s toolbar?
+	pdfmenubar=true,					% show Acrobat’s menu?
+	pdffitwindow=false,					% window fit to page when opened
+%	pdfstartview={FitV},				% fits the width of the page to the window
+	pdftitle={HAProxy Configuration Manual v1.5},	% title
+	pdfauthor={Willy Tarreau},			% author
+	pdfsubject={HAProxy - Configuration Manual - version 1.5},	% subject of the document
+	pdfcreator={Pavel Lang},			% creator of the document
+	pdfproducer={LaTeX},				% producer of the document
+	pdfkeywords={HAProxy} {Configuration Manual},	% list of keywords
+%	pdfnewwindow=true,					% links in new window
+	colorlinks=true,					% false: boxed links; true: colored links
+	linkcolor=ColorLink,				% color of internal links
+	citecolor=green,					% color of links to bibliography
+	filecolor=magenta,					% color of file links
+	urlcolor=ColorURL,					% color of external links
+	linktoc=all
+}
+
 \makeindex
 
-\title{HAProxy\\Configuration Manual\\version 1.5}
-\author{Willy Tarreau}
+\title{{\Huge \bf \href{http://haproxy.1wt.eu/}{HAProxy}}\\Configuration Manual\\version 1.5}
+\author{\href{mailto:w@1wt.eu}{Willy Tarreau}\\edited by \href{mailto:langpavel@phpskelet.org}{Pavel Lang} in \LaTeXe}
 \date{2011/09/10}
 
 \newcommand{\bslash}{$\backslash$}
 \newcommand{\gttt}{$>>>$}
+\newcommand{\httphdr}[1]{\texttt{\textbf{#1}}}
+\newcommand{\httpmethod}[1]{\texttt{#1}}
+\newcommand{\option}[1]{\texttt{option\nolinebreak[3] #1}}
+\newcommand{\CHAR}[1]{\texttt{\fcolorbox{Gray}{White}{#1}}}
+\newcommand{\RFC}[1]{\href{http://tools.ietf.org/html/rfc#1}{RFC~#1}}
 
 \begin{document}
+
+\pagenumbering{alph}
+
 \maketitle
 \addcontentsline{toc}{chapter}{Contents}
 
@@ -30,18 +61,21 @@
 % \listoftables
 
 
+% \chapter*{Preface}\normalsize
+% \addcontentsline{toc}{chapter}{Preface}
+% \pagestyle{plain}
 
-\chapter*{Preface}\normalsize
-\addcontentsline{toc}{chapter}{Preface}
-\pagestyle{plain}
+\clearpage
 
-
+\parskip 7pt							% sets spacing between paragraphs
+\parindent 0pt
 
 \pagestyle{headings}
 \pagenumbering{arabic}
 
+\flushleft
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\input{gen_chapters.tex}
+\input{ed_chapters.tex}
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 % \begin{thebibliography}{99}

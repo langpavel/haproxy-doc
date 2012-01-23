@@ -1,0 +1,34 @@
+% Section 1.2.2.
+
+\subsection{The request headers}
+
+The headers start at the second line. They are composed of a name at the
+beginning of the line, immediately followed by a colon \CHAR{:}. Traditionally,
+an LWS\footnote{LWS --- linear white spaces} is added after the colon but 
+that's not required. Then come the values.
+Multiple identical headers may be folded into one single line, delimiting the
+values with commas, provided that their order is respected. This is commonly
+encountered in the \httphdr{Cookie} field. A header may span over multiple lines if
+the subsequent lines begin with an LWS. In the example in \autoref{HTTP request},
+lines 4 and 5 define a total of 3 values for the \httphdr{Accept} header.
+
+Contrary to a common mis-conception, header names are not case-sensitive, and
+their values are not either if they refer to other header names (such as the
+\httphdr{Connection} header).
+
+The end of the headers is indicated by the first empty line. People often say
+that it's a double line feed, which is not exact, even if a double line feed
+is one valid form of empty line.
+
+Fortunately, HAProxy takes care of all these complex combinations when indexing
+headers, checking values and counting them, so there is no reason to worry
+about the way they could be written, but it is important not to accuse an
+application of being buggy if it does unusual, valid things.
+
+Important note:
+   As suggested by \RFC{2616}, HAProxy normalizes headers by replacing line breaks
+   in the middle of headers by LWS in order to join multi-line headers. This
+   is necessary for proper analysis and helps less capable HTTP parsers to work
+   correctly and not to be fooled by such complex constructs.
+
+

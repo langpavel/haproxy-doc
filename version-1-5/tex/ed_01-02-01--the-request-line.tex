@@ -1,0 +1,62 @@
+% Section 1.2.1.
+\subsection{The Request line}
+
+Line 1 is the \emph{request line}. It is always composed of 3 fields:
+\begin{tabbing}
+\qquad \= {a \emph{HTTP method}}\qquad\= \httpmethod{GET} \\
+\> {a \emph{URI}}			\> \verb|/serv/login.php?lang=en&profile=2| \\
+\> {a \emph{version tag}}	\> \verb|HTTP/1.1|
+\end{tabbing}
+
+All of them are delimited by what the standard calls \emph{LWS} (linear white spaces),
+which are commonly spaces, but can also be tabs or line feeds\slash carriage returns
+followed by spaces\slash tabs. The method itself cannot contain any colon \CHAR{:} and
+is limited to alphabetic letters. All those various combinations make it
+desirable that HAProxy performs the splitting itself rather than leaving it to
+the user to write a complex or inaccurate regular expression.
+
+
+The URI itself can have several forms:
+\begin{itemize}
+\item \textbf{relative URI}
+
+	\CHAR{/serv/login.php?lang=en\&profile=2}
+
+	It is a complete URL without the host part. This is generally what is
+	received by servers, reverse proxies and transparent proxies.
+
+\item \textbf{absolute URI, also called a \emph{URL}}
+
+	\CHAR{http://192.168.0.12:8080/serv/login.php?lang=en\&profile=2}
+
+	It is composed of a \emph{scheme} (the protocol name followed by \CHAR{://}), a host
+	name or address, optionally a colon \CHAR: followed by a port number, then
+	a relative URI beginning at the first slash \CHAR{\slash} after the address part.
+	This is generally what proxies receive, but a server supporting HTTP/1.1
+	must accept this form too.
+
+\item \textbf{star}
+
+	\CHAR{*}
+
+    this form is only accepted in association with the \httpmethod{OPTIONS}
+    method and is not relayable. It is used to inquiry a next hop's
+    capabilities.
+
+\item \textbf{address:port combination}
+
+    \CHAR{192.168.0.12:80}
+
+    This is used with the \httpmethod{CONNECT} method, which is used to establish TCP
+    tunnels through HTTP proxies, generally for HTTPS, but sometimes for
+    other protocols too.
+\end{itemize}
+
+In a relative URI, two sub-parts are identified. The part before the question
+mark is called the \emph{path}. It is typically the relative path to static objects
+on the server. The part after the question mark is called the \emph{query string}.
+It is mostly used with \httpmethod{GET} requests sent to dynamic scripts and is very
+specific to the language, framework or application in use.
+
+
+
