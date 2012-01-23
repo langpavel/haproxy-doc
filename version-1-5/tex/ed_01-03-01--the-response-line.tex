@@ -1,0 +1,55 @@
+% Section 1.3.1.
+
+\subsection{The Response line}
+
+Line 1 is the \emph{response line}. It is always composed of 3 fields:
+
+\begin{tabbing}
+%  - a version tag : HTTP/1.1
+\qquad \= {a \emph{version tag}}\qquad\= \verb|HTTP/1.1| \\
+%  - a status code : 200
+\> {a \emph{status code}}			\> \verb|200| \\
+%  - a reason      : OK
+\> {a \emph{reason}}	\> \verb|OK|
+\end{tabbing}
+
+The status code is always 3-digit. The first digit indicates a general status:
+\begin{tabbing}
+\qquad \httpcode{1xx}	\qquad \= informational message to be skipped (eg: \httpcode{100}, \httpcode{101}) \\
+\qquad \httpcode{2xx}		\> OK, content is following   (eg: \httpcode{200}, \httpcode{206}) \\
+\qquad \httpcode{3xx}		\> OK, no content following   (eg: \httpcode{302}, \httpcode{304}) \\
+\qquad \httpcode{4xx}		\> error caused by the client (eg: \httpcode{401}, \httpcode{403}, \httpcode{404}) \\
+\qquad \httpcode{5xx}		\> error caused by the server (eg: \httpcode{500}, \httpcode{502}, \httpcode{503}) \\
+\end{tabbing}
+
+Please refer to \RFC{2616} for the detailed meaning of all such codes. The
+\emph{reason} field is just a hint, but is not parsed by clients. Anything can be
+found there, but it's a common practice to respect the well-established
+messages. It can be composed of one or multiple words, such as \httpstatus{OK}, 
+\httpstatus{Found}, or \httpstatus{Authentication~Required}.
+
+Haproxy may emit the following status codes by itself:
+\begin{description}
+\item[Code]	When / reason
+\item[\httpcode{200}]	access to stats page, and when replying to monitoring requests 
+\item[\httpcode{301}]	when performing a redirection, depending on the configured code 
+\item[\httpcode{302}]	when performing a redirection, depending on the configured code 
+\item[\httpcode{303}]	when performing a redirection, depending on the configured code 
+\item[\httpcode{400}]	for an invalid or too large request 
+\item[\httpcode{401}]	when an authentication is required to perform the action 
+		(when accessing the stats page) 
+\item[\httpcode{403}]	when a request is forbidden by a \keyword{block} ACL or \keyword{reqdeny} filter 
+\item[\httpcode{408}]	when the request timeout strikes before the request is complete 
+\item[\httpcode{500}]	when haproxy encounters an unrecoverable internal error, such as 
+		a memory allocation failure, which should never happen 
+\item[\httpcode{502}]	when the server returns an empty, invalid or incomplete response, or
+		when an \keyword{rspdeny} filter blocks the response.
+\item[\httpcode{503}]	when no server was available to handle the request, or in response to
+		monitoring requests which match the \keyword{monitor fail} condition 
+\item[\httpcode{504}]	when the response timeout strikes before the server responds
+\end{description}
+
+The error \httpcode{4xx} and \httpcode{5xx} codes above may be customized
+(see \keyword{errorloc} in \autoref{keywords reference}).
+
+

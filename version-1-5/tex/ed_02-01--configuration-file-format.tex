@@ -1,0 +1,19 @@
+% Section 2.1.
+
+\section{Configuration file format}
+
+HAProxy's configuration process involves 3 major sources of parameters:
+
+\begin{itemize}
+\item the arguments from the command-line, which always take precedence
+\item the \keyword{global} section, which sets process-wide parameters
+\item the proxies sections which can take form of \keyword{defaults}, 
+	\keyword{listen}, \keyword{frontend} and \keyword{backend}.
+\end{itemize}
+
+The configuration file syntax consists in lines beginning with a keyword
+referenced in this manual, optionally followed by one or several parameters
+delimited by spaces. If spaces have to be entered in strings, then they must be
+preceded by a backslash \CHAR{\bslash} to be escaped. Backslashes also have to be
+escaped by doubling them.
+

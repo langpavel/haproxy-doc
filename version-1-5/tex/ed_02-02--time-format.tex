@@ -1,0 +1,20 @@
+% Section 2.2.
+
+\pagebreak[4]
+\section{Time format}
+
+Some parameters involve values representing time, such as timeouts. These
+values are generally expressed in milliseconds (unless explicitly stated
+otherwise) but may be expressed in any other unit by suffixing the unit to the
+numeric value. It is important to consider this because it will not be repeated
+for every keyword. Supported units are:
+
+\begin{tabbing}
+\qquad\=\CHAR{us}\quad\= microseconds\quad\= $1\,\mu s = 10^{-6}\,s = \nicefrac{1}{\numprint{1000000}}\,s$\\
+\>\CHAR{ms} \> milliseconds\> $1\,ms = 10^{-3}\,s = \nicefrac{1}{\numprint{1000}}\,s$. \em{This is the default.}\\
+\>\CHAR{s}  \> seconds\>  $1\,s = \numprint{1000}\,ms$\\
+\>\CHAR{m}  \> minutes\>  $1\,m = 60\,s = \numprint{60000}\,ms$\\
+\>\CHAR{h}  \> hours\>    $1\,h = 60\,m = \numprint{3600}\,s = \numprint{3600000}\,ms$\\
+\>\CHAR{d}  \> days\>     $1\,d = 24\,h = \numprint{1440}\,m = \numprint{86400}\,s = \numprint{86400000}\,ms$\\
+\end{tabbing}
+
