@@ -1,0 +1,178 @@
+% Section 3.2.
+
+\section{Performance tuning}
+
+\begin{keywords}
+
+\kw{maxconn} \param{number}
+
+  Sets the maximum per-process number of concurrent connections to \param{number}.
+  It is equivalent to the command-line argument \cmdarg{-n}. Proxies will stop accepting
+  connections when this limit is reached. The \keyword{ulimit-n} parameter is
+  automatically adjusted according to this value. See also \keyword{ulimit-n}.
+
+
+\kw{maxconnrate} \param{number}
+
+  Sets the maximum per-process number of connections per second to \param{number}.
+  Proxies will stop accepting connections when this limit is reached. It can be
+  used to limit the global capacity regardless of each frontend capacity. It is
+  important to note that this can only be used as a service protection measure,
+  as there will not necessarily be a fair share between frontends when the
+  limit is reached, so it's a good idea to also limit each frontend to some
+  value close to its expected share. Also, lowering tune.maxaccept can improve
+  fairness.
+
+\kw{maxpipes} \param{number}
+
+  Sets the maximum per-process number of pipes to \param{number}. Currently, pipes
+  are only used by kernel-based tcp splicing. Since a pipe contains two file
+  descriptors, the \keyword{ulimit-n} value will be increased accordingly. The default
+  value is maxconn/4, which seems to be more than enough for most heavy usages.
+  The splice code dynamically allocates and releases pipes, and can fall back
+  to standard copy, so setting this value too low may only impact performance.
+
+\kw{noepoll} \ 
+
+  Disables the use of the \emph{epoll} event polling system on Linux. It is
+  equivalent to the command-line argument \cmdarg{-de}. The next polling system
+  used will generally be \emph{poll}. See also \keyword{nosepoll}, and \keyword{nopoll}.
+
+\kw{nokqueue} \ 
+
+  Disables the use of the \emph{kqueue} event polling system on BSD. It is
+  equivalent to the command-line argument \cmdarg{-dk}. The next polling system
+  used will generally be \emph{poll}. See also \keyword{nopoll}.
+
+\kw{nopoll} \ 
+
+  Disables the use of the \emph{poll} event polling system. It is equivalent to the
+  command-line argument \cmdarg{-dp}. The next polling system used will be \emph{select}.
+  It should never be needed to disable \emph{poll} since it's available on all
+  platforms supported by HAProxy. See also \keyword{nosepoll}, and \keyword{nopoll} and
+  \keyword{nokqueue}.
+
+\kw{nosepoll} \ 
+
+  Disables the use of the \emph{speculative epoll} event polling system on Linux. It
+  is equivalent to the command-line argument \cmdarg{-ds}. The next polling system
+  used will generally be \emph{epoll}. See also \keyword{nosepoll}, and \keyword{nopoll}.
+
+\kw{nosplice} \ 
+
+  Disables the use of kernel tcp splicing between sockets on Linux. It is
+  equivalent to the command line argument \cmdarg{-dS}.  Data will then be copied
+  using conventional and more portable recv/send calls. Kernel tcp splicing is
+  limited to some very recent instances of kernel $2.6$. Most versions between
+  $2.6.25$ and $2.6.28$ are buggy and will forward corrupted data, so they must not
+  be used. This option makes it easier to globally disable kernel splicing in
+  case of doubt. See also \option{splice-auto}, \option{splice-request} and
+  \option{splice-response}.
+
+\kw{spread-checks} \param{0\dots 50, in percent}
+
+  Sometimes it is desirable to avoid sending health checks to servers at exact
+  intervals, for instance when many logical servers are located on the same
+  physical server. With the help of this parameter, it becomes possible to add
+  some randomness in the check interval between $0$ and $\pm 50 \%$. A value between
+  $2$ and $5$ seems to show good results. The default value remains at $0$.
+
+\kw{tune.bufsize} \param{number}
+
+  Sets the buffer size to this size (in bytes). Lower values allow more
+  sessions to coexist in the same amount of RAM, and higher values allow some
+  applications with very large cookies to work. The default value is $16\,384$
+  and can be changed at build time. It is strongly recommended not to change this
+  from the default value, as very low values will break some services such as
+  statistics, and values larger than default size will increase memory usage,
+  possibly causing the system to run out of memory. At least the global maxconn
+  parameter should be decreased by the same factor as this one is increased.
+
+\kw{tune.chksize} \param{number}
+
+  Sets the check buffer size to this size (in bytes). Higher values may help
+  find string or regex patterns in very large pages, though doing so may imply
+  more memory and CPU usage. The default value is $16\,384$ and can be changed at
+  build time. It is not recommended to change this value, but to use better
+  checks whenever possible.
+
+\kw{tune.http.maxhdr} \param{number}
+
+  Sets the maximum number of headers in a request. When a request comes with a
+  number of headers greater than this value (including the first line), it is
+  rejected with a \verb"400 Bad Request" status code. Similarly, too large responses
+  are blocked with \verb"502 Bad Gateway". The default value is \verb|101|,
+  which is enough for all usages, considering that the widely deployed Apache
+  server uses the same limit. It can be useful to push this limit further
+  to temporarily allow a buggy application to work by the time it gets fixed.
+  Keep in mind that each new header consumes $32$ bits of memory for each session,
+  so don't push this limit too high.
+
+\kw{tune.maxaccept} \param{number}
+
+  Sets the maximum number of consecutive accepts that a process may perform on
+  a single wake up. High values give higher priority to high connection rates,
+  while lower values give higher priority to already established connections.
+  This value is limited to $100$ by default in single process mode. However, in
+  multi-process mode (nbproc $> 1$), it defaults to $8$ so that when one process
+  wakes up, it does not take all incoming connections for itself and leaves a
+  part of them to other processes. Setting this value to $-1$ completely disables
+  the limitation. It should normally not be needed to tweak this value.
+
+\kw{tune.maxpollevents} \param{number}
+
+  Sets the maximum amount of events that can be processed at once in a call to
+  the polling system. The default value is adapted to the operating system. It
+  has been noticed that reducing it below $200$ tends to slightly decrease
+  latency at the expense of network bandwidth, and increasing it above $200$
+  tends to trade latency for slightly increased bandwidth.
+
+\kw{tune.maxrewrite} \param{number}
+
+  Sets the reserved buffer space to this size in bytes. The reserved space is
+  used for header rewriting or appending. The first reads on sockets will never
+  fill more than bufsize-maxrewrite. Historically it has defaulted to half of
+  bufsize, though that does not make much sense since there are rarely large
+  numbers of headers to add. Setting it too high prevents processing of large
+  requests or responses. Setting it too low prevents addition of new headers
+  to already large requests or to POST requests. It is generally wise to set it
+  to about $1024$. It is automatically readjusted to half of bufsize if it is
+  larger than that. This means you don't have to worry about it when changing
+  bufsize.
+
+\kw{tune.pipesize} \param{number}
+
+  Sets the kernel pipe buffer size to this size (in bytes). By default, pipes
+  are the default size for the system. But sometimes when using TCP splicing,
+  it can improve performance to increase pipe sizes, especially if it is
+  suspected that pipes are not filled and that many calls to \verb|splice()| are
+  performed. This has an impact on the kernel's memory footprint, so this must
+  not be changed if impacts are not understood.
+
+\kw{tune.rcvbuf.client} \param{number}
+\kw{tune.rcvbuf.server} \param{number}
+
+  Forces the kernel socket receive buffer size on the client or the server side
+  to the specified value in bytes. This value applies to all TCP/HTTP frontends
+  and backends. It should normally never be set, and the default size ($0$) lets
+  the kernel autotune this value depending on the amount of available memory.
+  However it can sometimes help to set it to very low values (eg: $4096$) in
+  order to save kernel memory by preventing it from buffering too large amounts
+  of received data. Lower values will significantly increase CPU usage though.
+
+\kw{tune.sndbuf.client} \param{number}
+\kw{tune.sndbuf.server} \param{number}
+
+  Forces the kernel socket send buffer size on the client or the server side to
+  the specified value in bytes. This value applies to all TCP/HTTP frontends
+  and backends. It should normally never be set, and the default size ($0$) lets
+  the kernel autotune this value depending on the amount of available memory.
+  However it can sometimes help to set it to very low values (eg: $4096$) in
+  order to save kernel memory by preventing it from buffering too large amounts
+  of received data. Lower values will significantly increase CPU usage though.
+  Another use case is to prevent write timeouts with extremely slow clients due
+  to the kernel waiting for a large part of the buffer to be read before
+  notifying haproxy again.
+
+
+\end{keywords}
