@@ -3,17 +3,13 @@
 
 \subsection{Raising log level upon errors}
 
-\begin{verbatim}
-
 Sometimes it is more convenient to separate normal traffic from errors logs,
 for instance in order to ease error monitoring from log files. When the option
 "log-separate-errors" is used, connections which experience errors, timeouts,
 retries, redispatches or HTTP status codes 5xx will see their syslog level
-raised from "info" to "err". This will help a syslog daemon store the log in
+raised from \emph{info} to \emph{err}. This will help a syslog daemon store the log in
 a separate file. It is very important to keep the errors in the normal traffic
 file too, so that log ordering is not altered. You should also be careful if
 you already have configured your syslog daemon to store all logs higher than
-"notice" in an "admin" file, because the "err" level is higher than "notice".
+\emph{notice} in an \emph{admin} file, because the \emph{err} level is higher than \emph{notice}.
 
-
-\end{verbatim}

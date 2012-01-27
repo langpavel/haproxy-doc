@@ -3,9 +3,7 @@
 
 \chapter{Server and default-server options}
 
-\begin{verbatim}
-
-The "server" and "default-server" keywords support a certain number of settings
+The \emph{server} and "default-server" keywords support a certain number of settings
 which are all passed as arguments on the server line. The order in which those
 arguments appear does not count, and they are all optional. Some of those
 settings are single words (booleans) while others expect one or several values
@@ -13,31 +11,41 @@ after them. In this case, the values must immediately follow the setting name.
 Except default-server, all those settings must be specified after the server's
 address if they are used:
 
+\begin{verbatim}
   server <name> <address>[:port] [settings ...]
   default-server [settings ...]
+\end{verbatim}
+
 
 The currently supported settings are the following ones.
 
+\begin{verbatim}
 addr <ipv4>
   Using the "addr" parameter, it becomes possible to use a different IP address
   to send health-checks. On some servers, it may be desirable to dedicate an IP
   address to specific component able to perform complex tests which are more
   suitable to health-checks than the application. This parameter is ignored if
   the "check" parameter is not set. See also the "port" parameter.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
-backup
+\begin{verbatim}
   When "backup" is present on a server line, the server is only used in load
   balancing when all other non-backup servers are unavailable. Requests coming
   with a persistence cookie referencing the server will always be served
   though. By default, only the first operational backup server is used, unless
   the "allbackups" option is set in the backend. See also the "allbackups"
   option.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
-check
+\begin{verbatim}
   This option enables health checks on the server. By default, a server is
   always considered available. If "check" is set, the server will receive
   periodic health checks to ensure that it is really able to serve requests.
@@ -49,9 +57,13 @@ check
   request method is define in the backend using the "httpchk", "smtpchk",
   "mysql-check", "pgsql-check" and "ssl-hello-chk" options. Please refer to
   those options and parameters for more information.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 cookie <value>
   The "cookie" parameter sets the cookie value assigned to the server to
   <value>. This value will be checked in incoming requests, and the first
@@ -60,41 +72,62 @@ cookie <value>
   sent to the client. There is nothing wrong in having several servers sharing
   the same cookie value, and it is in fact somewhat common between normal and
   backup servers. See also the "cookie" keyword in backend section.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
-disabled
+\begin{verbatim}
   The "disabled" keyword starts the server in the "disabled" state. That means
   that it is marked down in maintenance mode, and no connection other than the
   ones allowed by persist mode will reach it. It is very well suited to setup
   new servers, because normal traffic will never reach them, while it is still
   possible to test the service by making use of the force-persist mechanism.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 error-limit <count>
   If health observing is enabled, the "error-limit" parameter specifies the
   number of consecutive errors that triggers event selected by the "on-error"
   option. By default it is set to 10 consecutive errors.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
   See also the "check", "error-limit" and "on-error".
+\end{verbatim}
 
+\begin{verbatim}
 fall <count>
   The "fall" parameter states that a server will be considered as dead after
   <count> consecutive unsuccessful health checks. This value defaults to 3 if
   unspecified. See also the "check", "inter" and "rise" parameters.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 id <value>
   Set a persistent ID for the server. This ID must be positive and unique for
   the proxy. An unused ID will automatically be assigned if unset. The first
   assigned value will be 1. This ID is currently only returned in statistics.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 inter <delay>
 fastinter <delay>
 downinter <delay>
@@ -102,7 +135,9 @@ downinter <delay>
   to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.
   It is also possible to use "fastinter" and "downinter" to optimize delays
   between checks depending on the server state :
+\end{verbatim}
 
+\begin{verbatim}
              Server state            |             Interval used
     ---------------------------------+-----------------------------------------
      UP 100% (non-transitional)      | "inter"
@@ -113,7 +148,9 @@ downinter <delay>
     ---------------------------------+-----------------------------------------
      DOWN 100% (non-transitional)    | "downinter" if set, "inter" otherwise.
     ---------------------------------+-----------------------------------------
+\end{verbatim}
 
+\begin{verbatim}
   Just as with every other time-based parameter, they can be entered in any
   other explicit unit among { us, ms, s, m, h, d }. The "inter" parameter also
   serves as a timeout for health checks sent to servers if "timeout check" is
@@ -123,9 +160,13 @@ downinter <delay>
   noise in the health checks interval using the global "spread-checks"
   keyword. This makes sense for instance when a lot of backends use the same
   servers.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 maxconn <maxconn>
   The "maxconn" parameter specifies the maximal number of concurrent
   connections that will be sent to this server. If the number of incoming
@@ -135,9 +176,13 @@ maxconn <maxconn>
   parameter is specified, the limit becomes dynamic. The default value is "0"
   which means unlimited. See also the "minconn" and "maxqueue" parameters, and
   the backend's "fullconn" keyword.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 maxqueue <maxqueue>
   The "maxqueue" parameter specifies the maximal number of connections which
   will wait in the queue for this server. If this limit is reached, next
@@ -146,9 +191,13 @@ maxqueue <maxqueue>
   quickly re-log in when the server they try to connect to is dying. The
   default value is "0" which means the queue is unlimited. See also the
   "maxconn" and "minconn" parameters.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 minconn <minconn>
   When the "minconn" parameter is set, the maxconn limit becomes a dynamic
   limit following the backend's load. The server will always accept at least
@@ -158,14 +207,20 @@ minconn <minconn>
   server during normal loads, but push it further for important loads without
   overloading the server during exceptional loads. See also the "maxconn"
   and "maxqueue" parameters, as well as the "fullconn" backend keyword.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 non-stick
   Never add connections allocated to this sever to a stick-table.
   This may be used in conjunction with backup to ensure that
   stick-table persistence is disabled for backup servers.
+\end{verbatim}
 
+\begin{verbatim}
 observe <mode>
   This option enables health adjusting based on observing communication with
   the server. By default this functionality is disabled and enabling it also
@@ -174,11 +229,17 @@ observe <mode>
   significant. In layer7, which is only allowed for http proxies, responses
   received from server are verified, like valid/wrong http code, unparsable
   headers, a timeout, etc.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
   See also the "check", "on-error" and "error-limit".
+\end{verbatim}
 
+\begin{verbatim}
 on-error <mode>
   Select what should happen when enough consecutive errors are detected.
   Currently, four modes are available:
@@ -187,20 +248,32 @@ on-error <mode>
   - sudden-death: simulate a pre-fatal failed health check, one more failed
     check will mark a server down, forces fastinter
   - mark-down: mark the server immediately down and force fastinter
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
   See also the "check", "observe" and "error-limit".
+\end{verbatim}
 
+\begin{verbatim}
 on-marked-down <action>
   Modify what occurs when a server is marked down.
   Currently one action is available:
   - shutdown-sessions: Shutdown peer sessions
+\end{verbatim}
 
+\begin{verbatim}
   Actions are disabled by default
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 port <port>
   Using the "port" parameter, it becomes possible to use a different port to
   send health-checks. On some servers, it may be desirable to dedicate a port
@@ -208,9 +281,13 @@ port <port>
   to health-checks than the application. It is common to run a simple script in
   inetd for instance. This parameter is ignored if the "check" parameter is not
   set. See also the "addr" parameter.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 redir <prefix>
   The "redir" parameter enables the redirection mode for all GET and HEAD
   requests addressing this server. This means that instead of having HAProxy
@@ -226,18 +303,28 @@ redir <prefix>
   increasing bandwidth for static servers by having the clients directly
   connect to them. Note: never use a relative location here, it would cause a
   loop between the client and HAProxy!
+\end{verbatim}
 
+\begin{verbatim}
   Example :  server srv1 192.168.1.1:80 redir http://image1.mydomain.com check
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 rise <count>
   The "rise" parameter states that a server will be considered as operational
   after <count> consecutive successful health checks. This value defaults to 2
   if unspecified. See also the "check", "inter" and "fall" parameters.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 send-proxy
   The "send-proxy" parameter enforces use of the PROXY protocol over any
   connection established to this server. The PROXY protocol informs the other
@@ -250,9 +337,13 @@ send-proxy
   haproxy listening with an "accept-proxy" setting. This setting must not be
   used if the server isn't aware of the protocol. See also the "accept-proxy"
   option of the "bind" keyword.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 slowstart <start_time_in_ms>
   The "slowstart" parameter for a server accepts a value in milliseconds which
   indicates after how long a server which has just come back up will run at
@@ -260,21 +351,31 @@ slowstart <start_time_in_ms>
   in any other explicit unit among { us, ms, s, m, h, d }. The speed grows
   linearly from 0 to 100% during this time. The limitation applies to two
   parameters :
+\end{verbatim}
 
+\begin{verbatim}
   - maxconn: the number of connections accepted by the server will grow from 1
     to 100% of the usual dynamic limit defined by (minconn,maxconn,fullconn).
+\end{verbatim}
 
+\begin{verbatim}
   - weight: when the backend uses a dynamic weighted algorithm, the weight
     grows linearly from 1 to 100%. In this case, the weight is updated at every
     health-check. For this reason, it is important that the "inter" parameter
     is smaller than the "slowstart", in order to maximize the number of steps.
+\end{verbatim}
 
+\begin{verbatim}
   The slowstart never applies when haproxy starts, otherwise it would cause
   trouble to running servers. It only applies when a server has been previously
   seen as failed.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: Yes
+\end{verbatim}
 
+\begin{verbatim}
 source <addr>[:<pl>[-<ph>]] [usesrc { <addr2>[:<port2>] | client | clientip } ]
 source <addr>[:<port>] [usesrc { <addr2>[:<port2>] | hdr_ip(<hdr>[,<occ>]) } ]
 source <addr>[:<pl>[-<ph>]] [interface <name>] ...
@@ -282,7 +383,9 @@ source <addr>[:<pl>[-<ph>]] [interface <name>] ...
   connecting to the server. It follows the exact same parameters and principle
   as the backend "source" keyword, except that it only applies to the server
   referencing it. Please consult the "source" keyword for details.
+\end{verbatim}
 
+\begin{verbatim}
   Additionally, the "source" statement on a server line allows one to specify a
   source port range by indicating the lower and higher bounds delimited by a
   dash ('-'). Some operating systems might require a valid IP address when a
@@ -290,18 +393,26 @@ source <addr>[:<pl>[-<ph>]] [interface <name>] ...
   several servers. Doing so makes it possible to bypass the maximum of 64k
   total concurrent connections. The limit will then reach 64k connections per
   server.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 track [<proxy>/]<server>
   This option enables ability to set the current state of the server by
   tracking another one. Only a server with checks enabled can be tracked
   so it is not possible for example to track a server that tracks another
   one. If <proxy> is omitted the current one is used. If disable-on-404 is
   used, it has to be enabled on both proxies.
+\end{verbatim}
 
+\begin{verbatim}
   Supported in default-server: No
+\end{verbatim}
 
+\begin{verbatim}
 weight <weight>
   The "weight" parameter is used to adjust the server's weight relative to
   other servers. All servers will receive a load proportional to their weight
@@ -312,8 +423,9 @@ weight <weight>
   according to server's capacity, it is recommended to start with values which
   can both grow and shrink, for instance between 10 and 100 to leave enough
   room above and below for later adjustments.
-
-  Supported in default-server: Yes
-
-
 \end{verbatim}
+
+\begin{verbatim}
+  Supported in default-server: Yes
+\end{verbatim}
+

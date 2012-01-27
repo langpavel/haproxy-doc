@@ -3,48 +3,55 @@
 
 \section{Log formats}
 
-\begin{verbatim}
-
 HAProxy supports 4 log formats. Several fields are common between these formats
 and will be detailed in the following sections. A few of them may vary
 slightly with the configuration, due to indicators specific to certain
 options. The supported formats are as follows :
 
+\begin{verbatim}
   - the default format, which is very basic and very rarely used. It only
     provides very basic information about the incoming connection at the moment
     it is accepted : source IP:port, destination IP:port, and frontend-name.
     This mode will eventually disappear so it will not be described to great
     extents.
+\end{verbatim}
 
+\begin{verbatim}
   - the TCP format, which is more advanced. This format is enabled when "option
     tcplog" is set on the frontend. HAProxy will then usually wait for the
     connection to terminate before logging. This format provides much richer
     information, such as timers, connection counts, queue size, etc... This
     format is recommended for pure TCP proxies.
+\end{verbatim}
 
+\begin{verbatim}
   - the HTTP format, which is the most advanced for HTTP proxying. This format
     is enabled when "option httplog" is set on the frontend. It provides the
     same information as the TCP format with some HTTP-specific fields such as
     the request, the status code, and captures of headers and cookies. This
     format is recommended for HTTP proxies.
+\end{verbatim}
 
+\begin{verbatim}
   - the CLF HTTP format, which is equivalent to the HTTP format, but with the
     fields arranged in the same order as the CLF format. In this mode, all
     timers, captures, flags, etc... appear one per field after the end of the
     common fields, in the same order they appear in the standard HTTP format.
+\end{verbatim}
+
 
 Next sections will go deeper into details for each of these formats. Format
-specification will be performed on a "field" basis. Unless stated otherwise, a
+specification will be performed on a \emph{field} basis. Unless stated otherwise, a
 field is a portion of text delimited by any number of spaces. Since syslog
 servers are susceptible of inserting fields at the beginning of a line, it is
 always assumed that the first field is the one containing the process name and
 identifier.
 
+\begin{verbatim}
 Note : Since log lines may be quite long, the log examples in sections below
        might be broken into multiple lines. The example log lines will be
        prefixed with 3 closing angle brackets ('>>>') and each time a log is
        broken into multiple lines, each non-final line will end with a
        backslash ('\') and the next line will start indented by two characters.
-
-
 \end{verbatim}
+

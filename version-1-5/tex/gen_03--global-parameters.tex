@@ -3,14 +3,14 @@
 
 \chapter{Global parameters}
 
-\begin{verbatim}
-
-Parameters in the "global" section are process-wide and often OS-specific. They
+Parameters in the \emph{global} section are process-wide and often OS-specific. They
 are generally set once for all and do not need being changed once correct. Some
 of them have command-line equivalents.
 
-The following keywords are supported in the "global" section :
 
+The following keywords are supported in the \emph{global} section :
+
+\begin{verbatim}
  * Process management and security
    - chroot
    - daemon
@@ -27,7 +27,9 @@ The following keywords are supported in the "global" section :
    - node
    - description
    - unix-bind
+\end{verbatim}
 
+\begin{verbatim}
  * Performance tuning
    - maxconn
    - maxconnrate
@@ -49,10 +51,11 @@ The following keywords are supported in the "global" section :
    - tune.rcvbuf.server
    - tune.sndbuf.client
    - tune.sndbuf.server
+\end{verbatim}
 
+\begin{verbatim}
  * Debugging
    - debug
    - quiet
-
-
 \end{verbatim}
+

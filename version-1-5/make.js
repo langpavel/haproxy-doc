@@ -10,12 +10,20 @@ var fs = require('fs');
 var mkdirp = require('mkdirp').sync;
 
 // regexp
-var special_char = /(>>>|[#$%&~_^\\{}<>])/g;
-var caption = /\n((\d+\.?)+)\s*([^\n]+)\n-+[ ]*\n/g;
+var caption = /^((\d+\.?)+)\s*([^\n]+)\n-+(?:\n[ \t]*)+/mg;
 
+var QUOTES = {
+	"defaults": '\\keyword{defaults}',
+	"frontend": '\\keyword{frontend}',
+	"backend": '\\keyword{backend}',
+	"listen": '\\keyword{listen}',
+	"block": '\\keyword{block}',
+	"use\\_backend": '\\keyword{use\\_backend}',
+};
 
 var text = module.exports.text = fs.readFileSync('configuration.txt','utf8');
 
+text = text.replace(/\t/g,'        ');
 
 var split_chapters = module.exports.split_chapters = function(text) {
 	var parts = [];
@@ -45,6 +53,76 @@ var split_chapters = module.exports.split_chapters = function(text) {
 };
 
 
+var hasIndents = function(text) {
+	return text.match(/^(  |----+)/mg) !== null;
+};
+
+
+var special_char = /(>>>|[#$%&~_^\\{}<>])/g;
+var plainParagraph = function(text) {
+	var t = text;
+	t = t.replace(special_char, function(special) {
+		if(special === '\\')
+			return '\\bslash ';
+		else if(special === '<')
+			return '$<$';
+		else if(special === '>')
+			return '$>$';
+		else if(special === '>>>')
+			return '\\gttt ';
+		return '\\'+special;
+	});
+
+	t = t.replace(/\$<\$(\w+( \w+)*)\$>\$/g, function(m, n) {
+		return '\\param{' + n.replace(' ','~') + '}';
+	});
+
+	t = t.replace(/"(-.{1,5})"/g, function(m, n) {
+		return '\\cmdarg{' + n.replace(' ','~') + '}';
+	});
+
+	t = t.replace(/\('(.{1,5})'\)/g, function(m, n) {
+		return '\\CHAR{' + n.replace(' ','~') + '}';
+	});
+	t = t.replace(/'(.{1,5})'/g, function(m, n) {
+		return '\\CHAR{' + n.replace(' ','~') + '}';
+	});
+
+
+	t = t.replace(/"(\w+((\\_|\s+)\w+)*)"/g, function(m, n) {
+		if(typeof QUOTES[n] === 'string')
+			return QUOTES[n];
+		return '\\emph{' + n + '}';
+	});
+
+	return t;
+};
+
+
+var processPlainText = function(text) {
+	var i,l,sb = [];
+	var par, paragraphs = text.split(/\n(?:\w*\n)+/);
+
+	for(i=0, l=paragraphs.length; i<l; i++) {
+		par = paragraphs[i];
+		if(par.trim() == '')
+			continue;
+
+		if(hasIndents(par)) {
+			sb.push('\\begin{verbatim}\n');
+			sb.push(par);
+			sb.push('\n\\end{verbatim}\n\n');
+		} else {
+			sb.push('\n');
+			sb.push(plainParagraph(par));
+			sb.push('\n\n');
+		}
+	}
+
+	return sb.join('');
+};
+
+
 var getTeXContent = function(part) {
 	var sb = [];
 	sb.push('% This is generated content\n');
@@ -67,9 +145,7 @@ var getTeXContent = function(part) {
 			break;
 	}
 
-	sb.push('\n\\begin{verbatim}\n');
-	sb.push(part.text);
-	sb.push('\n\\end{verbatim}\n');
+	sb.push(processPlainText(part.text));
 
 	return sb.join('');
 };

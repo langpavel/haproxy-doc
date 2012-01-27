@@ -3,11 +3,10 @@
 
 \section{CSV format}
 
-\begin{verbatim}
-
 The statistics may be consulted either from the unix socket or from the HTTP
 page. Both means provide a CSV format whose fields follow.
 
+\begin{verbatim}
   0. pxname: proxy name
   1. svname: service name (FRONTEND for frontend, BACKEND for backend, any name
     for server)
@@ -76,6 +75,5 @@ page. Both means provide a CSV format whose fields follow.
  48. req_tot: total number of HTTP requests received
  49. cli_abrt: number of data transfers aborted by the client
  50. srv_abrt: number of data transfers aborted by the server (inc. in eresp)
-
-
 \end{verbatim}
+

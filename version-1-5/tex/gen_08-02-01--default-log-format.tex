@@ -3,22 +3,25 @@
 
 \subsection{Default log format}
 
-\begin{verbatim}
-
 This format is used when no specific option is set. The log is emitted as soon
 as the connection is accepted. One should note that this currently is the only
 format which logs the request's destination IP and ports.
 
+\begin{verbatim}
   Example :
         listen www
             mode http
             log global
             server srv1 127.0.0.1:8000
+\end{verbatim}
 
+\begin{verbatim}
     >>> Feb  6 12:12:09 localhost \
           haproxy[14385]: Connect from 10.0.1.2:33312 to 10.0.3.31:8012 \
           (www/HTTP)
+\end{verbatim}
 
+\begin{verbatim}
   Field   Format                                Extract from the example above
       1   process_name '[' pid ']:'                            haproxy[14385]:
       2   'Connect from'                                          Connect from
@@ -26,7 +29,9 @@ format which logs the request's destination IP and ports.
       4   'to'                                                              to
       5   destination_ip ':' destination_port                   10.0.3.31:8012
       6   '(' frontend_name '/' mode ')'                            (www/HTTP)
+\end{verbatim}
 
+\begin{verbatim}
 Detailed fields description :
   - "source_ip" is the IP address of the client which initiated the connection.
   - "source_port" is the TCP port of the client which initiated the connection.
@@ -35,13 +40,14 @@ Detailed fields description :
   - "frontend_name" is the name of the frontend (or listener) which received
     and processed the connection.
   - "mode is the mode the frontend is operating (TCP or HTTP).
+\end{verbatim}
+
 
 In case of a UNIX socket, the source and destination addresses are marked as
 "unix:" and the ports reflect the internal ID of the socket which accepted the
 connection (the same ID as reported in the stats).
 
+
 It is advised not to use this deprecated format for newer installations as it
 will eventually disappear.
 
-
-\end{verbatim}

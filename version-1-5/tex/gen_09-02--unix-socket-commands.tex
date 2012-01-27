@@ -3,8 +3,6 @@
 
 \section{Unix Socket commands}
 
-\begin{verbatim}
-
 The following commands are supported on the UNIX stats socket ; all of them
 must be terminated by a line feed. The socket supports pipelining, so that it
 is possible to chain multiple commands at once provided they are delimited by
@@ -15,52 +13,70 @@ given response with a given request. By default one command line is processed
 then the connection closes, but there is an interactive allowing multiple lines
 to be issued one at a time.
 
+
 It is important to understand that when multiple haproxy processes are started
 on the same sockets, any process may pick up the request and will output its
 own stats.
 
+\begin{verbatim}
 clear counters
   Clear the max values of the statistics counters in each proxy (frontend &
   backend) and in each server. The cumulated counters are not affected. This
   can be used to get clean counters after an incident, without having to
   restart nor to clear traffic counters. This command is restricted and can
   only be issued on sockets configured for levels "operator" or "admin".
+\end{verbatim}
 
+\begin{verbatim}
 clear counters all
   Clear all statistics counters in each proxy (frontend & backend) and in each
   server. This has the same effect as restarting. This command is restricted
   and can only be issued on sockets configured for level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 clear table <table> [ data.<type> <operator> <value> ] | [ key <key> ]
   Remove entries from the stick-table <table>.
+\end{verbatim}
 
+\begin{verbatim}
   This is typically used to unblock some users complaining they have been
   abusively denied access to a service, but this can also be used to clear some
   stickiness entries matching a server that is going to be replaced (see "show
   table" below for details).  Note that sometimes, removal of an entry will be
   refused because it is currently tracked by a session. Retrying a few seconds
   later after the session ends is usual enough.
+\end{verbatim}
 
+\begin{verbatim}
   In the case where no options arguments are given all entries will be removed.
+\end{verbatim}
 
+\begin{verbatim}
   When the "data." form is used entries matching a filter applied using the
   stored data (see "stick-table" in section 4.2) are removed.  A stored data
   type must be specified in <type>, and this data type must be stored in the
   table otherwise an error is reported. The data is compared according to
   <operator> with the 64-bit integer <value>.  Operators are the same as with
   the ACLs :
+\end{verbatim}
 
+\begin{verbatim}
     - eq : match entries whose data is equal to this value
     - ne : match entries whose data is not equal to this value
     - le : match entries whose data is less than or equal to this value
     - ge : match entries whose data is greater than or equal to this value
     - lt : match entries whose data is less than this value
     - gt : match entries whose data is greater than this value
+\end{verbatim}
 
+\begin{verbatim}
   When the key form is used the entry <key> is removed.  The key must be of the
   same type as the table, which currently is limited to IPv4, IPv6, integer and
   string.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         $ echo "show table http_proxy" | socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:2
@@ -68,9 +84,13 @@ clear table <table> [ data.<type> <operator> <value> ] | [ key <key> ]
           bytes_out_rate(60000)=187
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
           bytes_out_rate(60000)=191
+\end{verbatim}
 
+\begin{verbatim}
         $ echo "clear table http_proxy key 127.0.0.1" | socat stdio /tmp/sock1
+\end{verbatim}
 
+\begin{verbatim}
         $ echo "show table http_proxy" | socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:1
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
@@ -78,7 +98,9 @@ clear table <table> [ data.<type> <operator> <value> ] | [ key <key> ]
         $ echo "clear table http_proxy data.gpc0 eq 1" | socat stdio /tmp/sock1
         $ echo "show table http_proxy" | socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:1
+\end{verbatim}
 
+\begin{verbatim}
 disable frontend <frontend>
   Mark the frontend as temporarily stopped. This corresponds to the mode which
   is used during a soft restart : the frontend releases the port but can be
@@ -88,51 +110,77 @@ disable frontend <frontend>
   be fixed. That way it's possible to release the port and bind it into another
   process to restore operations. The frontend will appear with status "STOP"
   on the stats page.
+\end{verbatim}
 
+\begin{verbatim}
   The frontend may be specified either by its name or by its numeric ID,
   prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
   This command is restricted and can only be issued on sockets configured for
   level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 disable server <backend>/<server>
   Mark the server DOWN for maintenance. In this mode, no more checks will be
   performed on the server until it leaves maintenance.
   If the server is tracked by other servers, those servers will be set to DOWN
   during the maintenance.
+\end{verbatim}
 
+\begin{verbatim}
   In the statistics page, a server DOWN for maintenance will appear with a
   "MAINT" status, its tracking servers with the "MAINT(via)" one.
+\end{verbatim}
 
+\begin{verbatim}
   Both the backend and the server may be specified either by their name or by
   their numeric ID, prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
   This command is restricted and can only be issued on sockets configured for
   level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 enable frontend <frontend>
   Resume a frontend which was temporarily stopped. It is possible that some of
   the listening ports won't be able to bind anymore (eg: if another process
   took them since the 'disable frontend' operation). If this happens, an error
   is displayed. Some operating systems might not be able to resume a frontend
   which was disabled.
+\end{verbatim}
 
+\begin{verbatim}
   The frontend may be specified either by its name or by its numeric ID,
   prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
   This command is restricted and can only be issued on sockets configured for
   level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 enable server <backend>/<server>
   If the server was previously marked as DOWN for maintenance, this marks the
   server UP and checks are re-enabled.
+\end{verbatim}
 
+\begin{verbatim}
   Both the backend and the server may be specified either by their name or by
   their numeric ID, prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
   This command is restricted and can only be issued on sockets configured for
   level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 get weight <backend>/<server>
   Report the current weight and the initial weight of server <server> in
   backend <backend> or an error if either doesn't exist. The initial weight is
@@ -140,12 +188,14 @@ get weight <backend>/<server>
   unless the current weight has been changed. Both the backend and the server
   may be specified either by their name or by their numeric ID, prefixed with a
   sharp ('#').
+\end{verbatim}
 
-help
+\begin{verbatim}
   Print the list of known keywords and their basic usage. The same help screen
   is also displayed for unknown commands.
+\end{verbatim}
 
-prompt
+\begin{verbatim}
   Toggle the prompt at the beginning of the line and enter or leave interactive
   mode. In interactive mode, the connection is not closed after a command
   completes. Instead, the prompt will appear again, indicating the user that
@@ -154,10 +204,13 @@ prompt
   when one wants to periodically check information such as stats or errors.
   It is also a good idea to enter interactive mode before issuing a "help"
   command.
+\end{verbatim}
 
-quit
+\begin{verbatim}
   Close the connection when in interactive mode.
+\end{verbatim}
 
+\begin{verbatim}
 set maxconn frontend <frontend> <value>
   Dynamically change the specified frontend's maxconn setting. Any non-null
   positive value is allowed, but setting values larger than the global maxconn
@@ -166,7 +219,9 @@ set maxconn frontend <frontend> <value>
   the current number of connections, new connections acceptation will be
   delayed until the threshold is reached. The frontend might be specified by
   either its name or its numeric ID prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
 set maxconn global <maxconn>
   Dynamically change the global maxconn setting within the range defined by the
   initial global maxconn setting. If it is increased and connections were
@@ -174,18 +229,24 @@ set maxconn global <maxconn>
   the current number of connections, new connections acceptation will be
   delayed until the threshold is reached. A value of zero restores the initial
   setting.
+\end{verbatim}
 
+\begin{verbatim}
 set rate-limit connections global <value>
   Change the process-wide connection rate limit, which is set by the global
   'maxconnrate' setting. A value of zero disables the limitation. This limit
   applies to all frontends and the change has an immediate effect. The value
   is passed in number of connections per second.
+\end{verbatim}
 
+\begin{verbatim}
 set timeout cli <delay>
   Change the CLI interface timeout for current connection. This can be useful
   during long debugging sessions where the user needs to constantly inspect
   some indicators without being disconnected. The delay is passed in seconds.
+\end{verbatim}
 
+\begin{verbatim}
 set weight <backend>/<server> <weight>[%]
   Change a server's weight to the value passed in argument. If the value ends
   with the '%' sign, then the new weight will be relative to the initially
@@ -201,14 +262,18 @@ set weight <backend>/<server> <weight>[%]
   and can only be issued on sockets configured for level "admin". Both the
   backend and the server may be specified either by their name or by their
   numeric ID, prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
 show errors [<iid>]
   Dump last known request and response errors collected by frontends and
   backends. If <iid> is specified, the limit the dump to errors concerning
   either frontend or backend whose ID is <iid>. This command is restricted
   and can only be issued on sockets configured for levels "operator" or
   "admin".
+\end{verbatim}
 
+\begin{verbatim}
   The errors which may be collected are the last request and response errors
   caused by protocol violations, often due to invalid characters in header
   names. The report precisely indicates what exact character violated the
@@ -216,14 +281,18 @@ show errors [<iid>]
   detected, frontend and backend names, the server name (when known), the
   internal session ID and the source address which has initiated the session
   are reported too.
+\end{verbatim}
 
+\begin{verbatim}
   All characters are returned, and non-printable characters are encoded. The
   most common ones (\t = 9, \n = 10, \r = 13 and \e = 27) are encoded as one
   letter following a backslash. The backslash itself is encoded as '\\' to
   avoid confusion. Other non-printable characters are encoded '\xNN' where
   NN is the two-digits hexadecimal representation of the character's ASCII
   code.
+\end{verbatim}
 
+\begin{verbatim}
   Lines are prefixed with the position of their first character, starting at 0
   for the beginning of the buffer. At most one input line is printed per line,
   and large lines will be broken into multiple consecutive output lines so that
@@ -231,13 +300,17 @@ show errors [<iid>]
   line was broken, because it will not end with '\n' and the next line's offset
   will be followed by a '+' sign, indicating it is a continuation of previous
   line.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         $ echo "show errors" | socat stdio /tmp/sock1
     >>> [04/Mar/2009:15:46:56.081] backend http-in (#2) : invalid response
           src 127.0.0.1, session #54, frontend fe-eth0 (#1), server s2 (#1)
           response length 213 bytes, error at position 23:
+\end{verbatim}
 
+\begin{verbatim}
           00000  HTTP/1.0 200 OK\r\n
           00017  header/bizarre:blah\r\n
           00038  Location: blah\r\n
@@ -246,7 +319,9 @@ show errors [<iid>]
           00154+  otherwise it would be too large to print in a ter
           00204+ minal\r\n
           00211  \r\n
+\end{verbatim}
 
+\begin{verbatim}
     In the example above, we see that the backend "http-in" which has internal
     ID 2 has blocked an invalid response from its server s2 which has internal
     ID 1. The request was on session 54 initiated by source 127.0.0.1 and
@@ -254,15 +329,21 @@ show errors [<iid>]
     213 bytes when the error was detected, and the error was at byte 23. This
     is the slash ('/') in header name "header/bizarre", which is not a valid
     HTTP character for a header name.
+\end{verbatim}
 
+\begin{verbatim}
 show info
   Dump info about haproxy status on current process.
+\end{verbatim}
 
+\begin{verbatim}
 show sess
   Dump all known sessions. Avoid doing this on slow connections as this can
   be huge. This command is restricted and can only be issued on sockets
   configured for levels "operator" or "admin".
+\end{verbatim}
 
+\begin{verbatim}
 show sess <id>
   Display a lot of internal information about the specified session identifier.
   This identifier is the first field at the beginning of the lines in the dumps
@@ -270,7 +351,9 @@ show sess <id>
   useless to most users but may be used by haproxy developers to troubleshoot a
   complex bug. The output format is intentionally not documented so that it can
   freely evolve depending on demands.
+\end{verbatim}
 
+\begin{verbatim}
 show stat [<iid> <type> <sid>]
   Dump statistics in the CSV format. By passing <id>, <type> and <sid>, it is
   possible to dump only selected items :
@@ -281,7 +364,9 @@ show stat [<iid> <type> <sid>]
           1 + 2     = 3   -> frontend + backend.
           1 + 2 + 4 = 7   -> frontend + backend + server.
     - <sid> is a server ID, -1 to dump everything from the selected proxy.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         $ echo "show info;show stat" | socat stdio unix-connect:/tmp/sock1
     >>> Name: HAProxy
@@ -290,56 +375,75 @@ show stat [<iid> <type> <sid>]
         Nbproc: 1
         Process_num: 1
         (...)
+\end{verbatim}
 
+\begin{verbatim}
         # pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bout,dreq,  (...)
         stats,FRONTEND,,,0,0,1000,0,0,0,0,0,0,,,,,OPEN,,,,,,,,,1,1,0, (...)
         stats,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,0,0,0,,0,250,(...)
         (...)
         www1,BACKEND,0,0,0,0,1000,0,0,0,0,0,,0,0,0,0,UP,1,1,0,,0,250, (...)
+\end{verbatim}
 
+\begin{verbatim}
         $
+\end{verbatim}
 
+\begin{verbatim}
     Here, two commands have been issued at once. That way it's easy to find
     which process the stats apply to in multi-process mode. Notice the empty
     line after the information output which marks the end of the first block.
     A similar empty line appears at the end of the second block (stats) so that
     the reader knows the output has not been truncated.
+\end{verbatim}
 
+\begin{verbatim}
 show table
   Dump general information on all known stick-tables. Their name is returned
   (the name of the proxy which holds them), their type (currently zero, always
   IP), their size in maximum possible number of entries, and the number of
   entries currently in use.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         $ echo "show table" | socat stdio /tmp/sock1
     >>> # table: front_pub, type: ip, size:204800, used:171454
     >>> # table: back_rdp, type: ip, size:204800, used:0
+\end{verbatim}
 
+\begin{verbatim}
 show table <name> [ data.<type> <operator> <value> ] | [ key <key> ]
   Dump contents of stick-table <name>. In this mode, a first line of generic
   information about the table is reported as with "show table", then all
   entries are dumped. Since this can be quite heavy, it is possible to specify
   a filter in order to specify what entries to display.
+\end{verbatim}
 
+\begin{verbatim}
   When the "data." form is used the filter applies to the stored data (see
   "stick-table" in section 4.2).  A stored data type must be specified
   in <type>, and this data type must be stored in the table otherwise an
   error is reported. The data is compared according to <operator> with the
   64-bit integer <value>.  Operators are the same as with the ACLs :
+\end{verbatim}
 
+\begin{verbatim}
     - eq : match entries whose data is equal to this value
     - ne : match entries whose data is not equal to this value
     - le : match entries whose data is less than or equal to this value
     - ge : match entries whose data is greater than or equal to this value
     - lt : match entries whose data is less than this value
     - gt : match entries whose data is greater than this value
+\end{verbatim}
 
-
+\begin{verbatim}
   When the key form is used the entry <key> is shown.  The key must be of the
   same type as the table, which currently is limited to IPv4, IPv6, integer,
   and string.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         $ echo "show table http_proxy" | socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:2
@@ -347,30 +451,40 @@ show table <name> [ data.<type> <operator> <value> ] | [ key <key> ]
           bytes_out_rate(60000)=187
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
           bytes_out_rate(60000)=191
+\end{verbatim}
 
+\begin{verbatim}
         $ echo "show table http_proxy data.gpc0 gt 0" | socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:2
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
           bytes_out_rate(60000)=191
+\end{verbatim}
 
+\begin{verbatim}
         $ echo "show table http_proxy data.conn_rate gt 5" | \
             socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:2
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
           bytes_out_rate(60000)=191
+\end{verbatim}
 
+\begin{verbatim}
         $ echo "show table http_proxy key 127.0.0.2" | \
             socat stdio /tmp/sock1
     >>> # table: http_proxy, type: ip, size:204800, used:2
     >>> 0x80e6a80: key=127.0.0.2 use=0 exp=3594740 gpc0=1 conn_rate(30000)=10 \
           bytes_out_rate(60000)=191
+\end{verbatim}
 
+\begin{verbatim}
   When the data criterion applies to a dynamic value dependent on time such as
   a bytes rate, the value is dynamically computed during the evaluation of the
   entry in order to decide whether it has to be dumped or not. This means that
   such a filter could match for some time then not match anymore because as
   time goes, the average event rate drops.
+\end{verbatim}
 
+\begin{verbatim}
   It is possible to use this to extract lists of IP addresses abusing the
   service, in order to monitor them or even blacklist them in a firewall.
   Example :
@@ -378,7 +492,9 @@ show table <name> [ data.<type> <operator> <value> ] | [ key <key> ]
           | socat stdio /tmp/sock1 \
           | fgrep 'key=' | cut -d' ' -f2 | cut -d= -f2 > abusers-ip.txt
           ( or | awk '/key/{ print a[split($2,a,"=")]; }' )
+\end{verbatim}
 
+\begin{verbatim}
 shutdown frontend <frontend>
   Completely delete the specified frontend. All the ports it was bound to will
   be released. It will not be possible to enable the frontend anymore after
@@ -387,13 +503,19 @@ shutdown frontend <frontend>
   way it's possible to release the port and bind it into another process to
   restore operations. The frontend will not appear at all on the stats page
   once it is terminated.
+\end{verbatim}
 
+\begin{verbatim}
   The frontend may be specified either by its name or by its numeric ID,
   prefixed with a sharp ('#').
+\end{verbatim}
 
+\begin{verbatim}
   This command is restricted and can only be issued on sockets configured for
   level "admin".
+\end{verbatim}
 
+\begin{verbatim}
 shutdown session <id>
   Immediately terminate the session matching the specified session identifier.
   This identifier is the first field at the beginning of the lines in the dumps
@@ -401,12 +523,16 @@ shutdown session <id>
   terminate a long-running session without waiting for a timeout or when an
   endless transfer is ongoing. Such terminated sessions are reported with a 'K'
   flag in the logs.
+\end{verbatim}
 
+\begin{verbatim}
 shutdown sessions <backend>/<server>
   Immediately terminate all the sessions attached to the specified server. This
   can be used to terminate long-running sessions after a server is put into
   maintenance mode, for instance. Such terminated sessions are reported with a
   'K' flag in the logs.
+\end{verbatim}
+
 
 /*
  * Local variables:
@@ -414,4 +540,4 @@ shutdown sessions <backend>/<server>
  * End:
  */
 
-\end{verbatim}
+

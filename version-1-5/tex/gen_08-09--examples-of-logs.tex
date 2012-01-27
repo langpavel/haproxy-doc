@@ -3,71 +3,100 @@
 
 \section{Examples of logs}
 
-\begin{verbatim}
-
 These are real-world examples of logs accompanied with an explanation. Some of
 them have been made up by hand. The syslog part has been removed for better
 reading. Their sole purpose is to explain how to decipher them.
 
+\begin{verbatim}
     >>> haproxy[674]: 127.0.0.1:33318 [15/Oct/2003:08:31:57.130] px-http \
           px-http/srv1 6559/0/7/147/6723 200 243 - - ---- 5/3/3/1/0 0/0 \
           "HEAD / HTTP/1.0"
+\end{verbatim}
 
+\begin{verbatim}
     => long request (6.5s) entered by hand through 'telnet'. The server replied
        in 147 ms, and the session ended normally ('----')
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[674]: 127.0.0.1:33319 [15/Oct/2003:08:31:57.149] px-http \
           px-http/srv1 6559/1230/7/147/6870 200 243 - - ---- 324/239/239/99/0 \
           0/9 "HEAD / HTTP/1.0"
+\end{verbatim}
 
+\begin{verbatim}
     => Idem, but the request was queued in the global queue behind 9 other
        requests, and waited there for 1230 ms.
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[674]: 127.0.0.1:33320 [15/Oct/2003:08:32:17.654] px-http \
           px-http/srv1 9/0/7/14/+30 200 +243 - - ---- 3/3/3/1/0 0/0 \
           "GET /image.iso HTTP/1.0"
+\end{verbatim}
 
+\begin{verbatim}
     => request for a long data transfer. The "logasap" option was specified, so
        the log was produced just before transferring data. The server replied in
        14 ms, 243 bytes of headers were sent to the client, and total time from
        accept to first data byte is 30 ms.
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[674]: 127.0.0.1:33320 [15/Oct/2003:08:32:17.925] px-http \
           px-http/srv1 9/0/7/14/30 502 243 - - PH-- 3/2/2/0/0 0/0 \
           "GET /cgi-bin/bug.cgi? HTTP/1.0"
+\end{verbatim}
 
+\begin{verbatim}
     => the proxy blocked a server response either because of an "rspdeny" or
        "rspideny" filter, or because the response was improperly formatted and
        not HTTP-compliant, or because it blocked sensitive information which
        risked being cached. In this case, the response is replaced with a "502
        bad gateway". The flags ("PH--") tell us that it was haproxy who decided
        to return the 502 and not the server.
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[18113]: 127.0.0.1:34548 [15/Oct/2003:15:18:55.798] px-http \
           px-http/<NOSRV> -1/-1/-1/-1/8490 -1 0 - - CR-- 2/2/2/0/0 0/0 ""
+\end{verbatim}
 
+\begin{verbatim}
     => the client never completed its request and aborted itself ("C---") after
        8.5s, while the proxy was waiting for the request headers ("-R--").
        Nothing was sent to any server.
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[18113]: 127.0.0.1:34549 [15/Oct/2003:15:19:06.103] px-http \
          px-http/<NOSRV> -1/-1/-1/-1/50001 408 0 - - cR-- 2/2/2/0/0 0/0 ""
+\end{verbatim}
 
+\begin{verbatim}
     => The client never completed its request, which was aborted by the
        time-out ("c---") after 50s, while the proxy was waiting for the request
        headers ("-R--").  Nothing was sent to any server, but the proxy could
        send a 408 return code to the client.
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[18989]: 127.0.0.1:34550 [15/Oct/2003:15:24:28.312] px-tcp \
           px-tcp/srv1 0/0/5007 0 cD 0/0/0/0/0 0/0
+\end{verbatim}
 
+\begin{verbatim}
     => This log was produced with "option tcplog". The client timed out after
        5 seconds ("c----").
+\end{verbatim}
 
+\begin{verbatim}
     >>> haproxy[18989]: 10.0.0.1:34552 [15/Oct/2003:15:26:31.462] px-http \
           px-http/srv1 3183/-1/-1/-1/11215 503 0 - - SC-- 205/202/202/115/3 \
           0/0 "HEAD / HTTP/1.0"
+\end{verbatim}
 
+\begin{verbatim}
     => The request took 3s to complete (probably a network problem), and the
        connection to the server failed ('SC--') after 4 attempts of 2 seconds
        (config says 'retries 3'), and no redispatch (otherwise we would have
@@ -75,6 +104,5 @@ reading. Their sole purpose is to explain how to decipher them.
        connections on this server, 202 connections on this proxy, and 205 on
        the global process. It is possible that the server refused the
        connection because of too many already established.
-
-
 \end{verbatim}
+

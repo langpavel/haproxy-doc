@@ -3,20 +3,21 @@
 
 \subsection{Matching at Layer 4 and below}
 
-\begin{verbatim}
-
 A first set of criteria applies to information which does not require any
 analysis of the request or response contents. Those generally include TCP/IP
 addresses and ports, as well as internal values independant on the stream.
 
-always_false
+\begin{verbatim}
   This one never matches. All values and flags are ignored. It may be used as
   a temporary replacement for another one when adjusting configurations.
+\end{verbatim}
 
-always_true
+\begin{verbatim}
   This one always matches. All values and flags are ignored. It may be used as
   a temporary replacement for another one when adjusting configurations.
+\end{verbatim}
 
+\begin{verbatim}
 avg_queue <integer>
 avg_queue(<backend>) <integer>
   Returns the total number of queued connections of the designated backend
@@ -30,7 +31,9 @@ avg_queue(<backend>) <integer>
   as we expect one server to get back soon anyway, but we still prefer to send
   new traffic to another backend if in better shape. See also the "queue",
   "be_conn", and "be_sess_rate" criteria.
+\end{verbatim}
 
+\begin{verbatim}
 be_conn <integer>
 be_conn(<backend>) <integer>
   Applies to the number of currently established connections on the backend,
@@ -38,11 +41,15 @@ be_conn(<backend>) <integer>
   specified, the current one is used. But it is also possible to check another
   backend. It can be used to use a specific farm when the nominal one is full.
   See also the "fe_conn", "queue" and "be_sess_rate" criteria.
+\end{verbatim}
 
+\begin{verbatim}
 be_id <integer>
   Applies to the backend's id. Can be used in frontends to check from which
   backend it was called.
+\end{verbatim}
 
+\begin{verbatim}
 be_sess_rate <integer>
 be_sess_rate(<backend>) <integer>
   Returns true when the sessions creation rate on the backend matches the
@@ -50,23 +57,31 @@ be_sess_rate(<backend>) <integer>
   used to switch to an alternate backend when an expensive or fragile one
   reaches too high a session rate, or to limit abuse of service (eg. prevent
   sucking of an online dictionary).
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         # Redirect to an error page if the dictionary is requested too often
         backend dynamic
             mode http
             acl being_scanned be_sess_rate gt 100
             redirect location /denied.html if being_scanned
+\end{verbatim}
 
+\begin{verbatim}
 connslots <integer>
 connslots(<backend>) <integer>
   The basic idea here is to be able to measure the number of connection "slots"
   still available (connection + queue), so that anything beyond that (intended
   usage; see "use_backend" keyword) can be redirected to a different backend.
+\end{verbatim}
 
+\begin{verbatim}
   'connslots' = number of available server connection slots, + number of
   available server queue slots.
+\end{verbatim}
 
+\begin{verbatim}
   Note that while "fe_conn" may be used, "connslots" comes in especially
   useful when you have a case of traffic going to one single ip, splitting into
   multiple backends (perhaps using acls to do name-based load balancing) and
@@ -74,16 +89,22 @@ connslots(<backend>) <integer>
   available "connslots".  Also, whereas "nbsrv" only measures servers that are
   actually *down*, this acl is more fine-grained and looks into the number of
   available connection slots as well. See also "queue" and "avg_queue".
+\end{verbatim}
 
+\begin{verbatim}
   OTHER CAVEATS AND NOTES: at this point in time, the code does not take care
   of dynamic connections. Also, if any of the server maxconn, or maxqueue is 0,
   then this acl clearly does not make sense, in which case the value returned
   will be -1.
+\end{verbatim}
 
+\begin{verbatim}
 dst <ip_address>
   Applies to the local IPv4 address the client connected to. It can be used to
   switch to a different backend for some alternative addresses.
+\end{verbatim}
 
+\begin{verbatim}
 dst_conn <integer>
   Applies to the number of currently established connections on the same socket
   including the one being evaluated. It can be used to either return a sorry
@@ -91,11 +112,15 @@ dst_conn <integer>
   when the socket is considered saturated. This offers the ability to assign
   different limits to different listening ports or addresses. See also the
   "fe_conn" and "be_conn" criteria.
+\end{verbatim}
 
+\begin{verbatim}
 dst_port <integer>
   Applies to the local port the client connected to. It can be used to switch
   to a different backend for some alternative ports.
+\end{verbatim}
 
+\begin{verbatim}
 fe_conn <integer>
 fe_conn(<frontend>) <integer>
   Applies to the number of currently established connections on the frontend,
@@ -105,11 +130,15 @@ fe_conn(<frontend>) <integer>
   or to use a specific backend to drain new requests when the farm is
   considered saturated. See also the "dst_conn", "be_conn" and "fe_sess_rate"
   criteria.
+\end{verbatim}
 
+\begin{verbatim}
 fe_id <integer>
   Applies to the frontend's id. Can be used in backends to check from which
   frontend it was called.
+\end{verbatim}
 
+\begin{verbatim}
 fe_sess_rate <integer>
 fe_sess_rate(<frontend>) <integer>
   Returns true when the session creation rate on the current or the named
@@ -118,7 +147,9 @@ fe_sess_rate(<frontend>) <integer>
   order to prevent abuse of service at the earliest moment. This can be
   combined with layer 4 ACLs in order to force the clients to wait a bit for
   the rate to go down below the limit.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         # This frontend limits incoming mails to 10/s with a max of 100
         # concurrent connections. We accept any connection below 10/s, and
@@ -132,7 +163,9 @@ fe_sess_rate(<frontend>) <integer>
             tcp-request inspect-delay 100ms
             tcp-request content accept if ! too_fast
             tcp-request content accept if WAIT_END
+\end{verbatim}
 
+\begin{verbatim}
 nbsrv <integer>
 nbsrv(<backend>) <integer>
   Returns true when the number of usable servers of either the current backend
@@ -140,7 +173,9 @@ nbsrv(<backend>) <integer>
   switch to an alternate backend when the number of servers is too low to
   to handle some load. It is useful to report a failure when combined with
   "monitor fail".
+\end{verbatim}
 
+\begin{verbatim}
 queue <integer>
 queue(<backend>) <integer>
   Returns the total number of queued connections of the designated backend,
@@ -150,28 +185,30 @@ queue(<backend>) <integer>
   generally indicating a surge of traffic or a massive slowdown on the servers.
   One possible action could be to reject new users but still accept old ones.
   See also the "avg_queue", "be_conn", and "be_sess_rate" criteria.
+\end{verbatim}
 
-sc1_bytes_in_rate
-sc2_bytes_in_rate
+\begin{verbatim}
   Returns the average client-to-server bytes rate from the currently tracked
   counters, measured in amount of bytes over the period configured in the
   table. See also src_bytes_in_rate.
+\end{verbatim}
 
-sc1_bytes_out_rate
-sc2_bytes_out_rate
+\begin{verbatim}
   Returns the average server-to-client bytes rate from the currently tracked
   counters, measured in amount of bytes over the period configured in the
   table. See also src_bytes_out_rate.
+\end{verbatim}
 
-sc1_clr_gpc0
-sc2_clr_gpc0
+\begin{verbatim}
   Clears the first General Purpose Counter associated to the currently tracked
   counters, and returns its previous value. Before the first invocation, the
   stored value is zero, so first invocation will always return zero. The test
   can also be used alone and always returns true. This is typically used as a
   second ACL in an expression in order to mark a connection when a first ACL
   was verified :
+\end{verbatim}
 
+\begin{verbatim}
         # block if 5 consecutive requests continue to come faster than 10 sess
         # per second, and reset the counter as soon as the traffic slows down.
         acl abuse sc1_http_req_rate gt 10
@@ -179,122 +216,134 @@ sc2_clr_gpc0
         acl save  sc1_clr_gpc0
         tcp-request connection accept if !abuse save
         tcp-request connection reject if abuse kill
+\end{verbatim}
 
-sc1_conn_cnt
-sc2_conn_cnt
+\begin{verbatim}
   Returns the cumulated number of incoming connections from currently tracked
   counters. See also src_conn_cnt.
+\end{verbatim}
 
-sc1_conn_cur
-sc2_conn_cur
+\begin{verbatim}
   Returns the current amount of concurrent connections tracking the same
   tracked counters. This number is automatically incremented when tracking
   begins and decremented when tracking stops. See also src_conn_cur.
+\end{verbatim}
 
-sc1_conn_rate
-sc2_conn_rate
+\begin{verbatim}
   Returns the average connection rate from the currently tracked counters,
   measured in amount of connections over the period configured in the table.
   See also src_conn_rate.
+\end{verbatim}
 
-sc1_get_gpc0
-sc2_get_gpc0
+\begin{verbatim}
   Returns the value of the first General Purpose Counter associated to the
   currently tracked counters. See also src_get_gpc0 and sc1/sc2_inc_gpc0.
+\end{verbatim}
 
-sc1_http_err_cnt
-sc2_http_err_cnt
+\begin{verbatim}
   Returns the cumulated number of HTTP errors from the currently tracked
   counters. This includes the both request errors and 4xx error responses.
   See also src_http_err_cnt.
+\end{verbatim}
 
-sc1_http_err_rate
-sc2_http_err_rate
+\begin{verbatim}
   Returns the average rate of HTTP errors from the currently tracked counters,
   measured in amount of errors over the period configured in the table. This
   includes the both request errors and 4xx error responses. See also
   src_http_err_rate.
+\end{verbatim}
 
-sc1_http_req_cnt
-sc2_http_req_cnt
+\begin{verbatim}
   Returns the cumulated number of HTTP requests from the currently tracked
   counters. This includes every started request, valid or not. See also
   src_http_req_cnt.
+\end{verbatim}
 
-sc1_http_req_rate
-sc2_http_req_rate
+\begin{verbatim}
   Returns the average rate of HTTP requests from the currently tracked
   counters, measured in amount of requests over the period configured in
   the table. This includes every started request, valid or not. See also
   src_http_req_rate.
+\end{verbatim}
 
-sc1_inc_gpc0
-sc2_inc_gpc0
+\begin{verbatim}
   Increments the first General Purpose Counter associated to the currently
   tracked counters, and returns its value. Before the first invocation, the
   stored value is zero, so first invocation will increase it to 1 and will
   return 1. The test can also be used alone and always returns true. This is
   typically used as a second ACL in an expression in order to mark a connection
   when a first ACL was verified :
+\end{verbatim}
 
+\begin{verbatim}
         acl abuse sc1_http_req_rate gt 10
         acl kill  sc1_inc_gpc0
         tcp-request connection reject if abuse kill
+\end{verbatim}
 
-sc1_kbytes_in
-sc2_kbytes_in
+\begin{verbatim}
   Returns the amount of client-to-server data from the currently tracked
   counters, measured in kilobytes over the period configured in the table. The
   test is currently performed on 32-bit integers, which limits values to 4
   terabytes. See also src_kbytes_in.
+\end{verbatim}
 
-sc1_kbytes_out
-sc2_kbytes_out
+\begin{verbatim}
   Returns the amount of server-to-client data from the currently tracked
   counters, measured in kilobytes over the period configured in the table. The
   test is currently performed on 32-bit integers, which limits values to 4
   terabytes. See also src_kbytes_out.
+\end{verbatim}
 
-sc1_sess_cnt
-sc2_sess_cnt
+\begin{verbatim}
   Returns the cumulated number of incoming connections that were transformed
   into sessions, which means that they were accepted by a "tcp-request
   connection" rule, from the currently tracked counters. A backend may count
   more sessions than connections because each connection could result in many
   backend sessions if some HTTP keep-alive is performend over the connection
   with the client. See also src_sess_cnt.
+\end{verbatim}
 
-sc1_sess_rate
-sc2_sess_rate
+\begin{verbatim}
   Returns the average session rate from the currently tracked counters,
   measured in amount of sessions over the period configured in the table. A
   session is a connection that got past the early "tcp-request connection"
   rules. A backend may count more sessions than connections because each
   connection could result in many backend sessions if some HTTP keep-alive is
   performend over the connection with the client. See also src_sess_rate.
+\end{verbatim}
 
+\begin{verbatim}
 so_id <integer>
   Applies to the socket's id. Useful in frontends with many bind keywords.
+\end{verbatim}
 
+\begin{verbatim}
 src <ip_address>
   Applies to the client's IPv4 address. It is usually used to limit access to
   certain resources such as statistics. Note that it is the TCP-level source
   address which is used, and not the address of a client behind a proxy.
+\end{verbatim}
 
+\begin{verbatim}
 src_bytes_in_rate <integer>
 src_bytes_in_rate(<table>) <integer>
   Returns the average bytes rate from the connection's source IPv4 address in
   the current proxy's stick-table or in the designated stick-table, measured in
   amount of bytes over the period configured in the table. If the address is
   not found, zero is returned. See also sc1/sc2_bytes_in_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_bytes_out_rate <integer>
 src_bytes_out_rate(<table>) <integer>
   Returns the average bytes rate to the connection's source IPv4 address in the
   current proxy's stick-table or in the designated stick-table, measured in
   amount of bytes over the period configured in the table. If the address is
   not found, zero is returned. See also sc1/sc2_bytes_out_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_clr_gpc0 <integer>
 src_clr_gpc0(<table>) <integer>
   Clears the first General Purpose Counter associated to the connection's
@@ -303,7 +352,9 @@ src_clr_gpc0(<table>) <integer>
   entry is created and 0 is returned. The test can also be used alone and
   always returns true. This is typically used as a second ACL in an expression
   in order to mark a connection when a first ACL was verified :
+\end{verbatim}
 
+\begin{verbatim}
         # block if 5 consecutive requests continue to come faster than 10 sess
         # per second, and reset the counter as soon as the traffic slows down.
         acl abuse src_http_req_rate gt 10
@@ -311,42 +362,54 @@ src_clr_gpc0(<table>) <integer>
         acl save  src_clr_gpc0
         tcp-request connection accept if !abuse save
         tcp-request connection reject if abuse kill
+\end{verbatim}
 
+\begin{verbatim}
 src_conn_cnt <integer>
 src_conn_cnt(<table>) <integer>
   Returns the cumulated number of connections initiated from the current
   connection's source IPv4 address in the current proxy's stick-table or in
   the designated stick-table. If the address is not found, zero is returned.
   See also sc1/sc2_conn_cnt.
+\end{verbatim}
 
+\begin{verbatim}
 src_conn_cur <integer>
 src_conn_cur(<table>) <integer>
   Returns the current amount of concurrent connections initiated from the
   current connection's source IPv4 address in the current proxy's stick-table
   or in the designated stick-table. If the address is not found, zero is
   returned. See also sc1/sc2_conn_cur.
+\end{verbatim}
 
+\begin{verbatim}
 src_conn_rate <integer>
 src_conn_rate(<table>) <integer>
   Returns the average connection rate from the connection's source IPv4 address
   in the current proxy's stick-table or in the designated stick-table, measured
   in amount of connections over the period configured in the table. If the
   address is not found, zero is returned. See also sc1/sc2_conn_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_get_gpc0 <integer>
 src_get_gpc0(<table>) <integer>
   Returns the value of the first General Purpose Counter associated to the
   connection's source IPv4 address in the current proxy's stick-table or in
   the designated stick-table. If the address is not found, zero is returned.
   See also sc1/sc2_get_gpc0 and src_inc_gpc0.
+\end{verbatim}
 
+\begin{verbatim}
 src_http_err_cnt <integer>
 src_http_err_cnt(<table>) <integer>
   Returns the cumulated number of HTTP errors from the current connection's
   source IPv4 address in the current proxy's stick-table or in the designated
   stick-table. This includes the both request errors and 4xx error responses.
   If the address is not found, zero is returned. See also sc1/sc2_http_err_cnt.
+\end{verbatim}
 
+\begin{verbatim}
 src_http_err_rate <integer>
 src_http_err_rate(<table>) <integer>
   Returns the average rate of HTTP errors from the current connection's source
@@ -354,14 +417,18 @@ src_http_err_rate(<table>) <integer>
   table, measured in amount of errors over the period configured in the table.
   This includes the both request errors and 4xx error responses. If the address
   is not found, zero is returned. See also sc1/sc2_http_err_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_http_req_cnt <integer>
 src_http_req_cnt(<table>) <integer>
   Returns the cumulated number of HTTP requests from the current connection's
   source IPv4 address in the current proxy's stick-table or in the designated
   stick-table. This includes every started request, valid or not. If the
   address is not found, zero is returned. See also sc1/sc2_http_req_cnt.
+\end{verbatim}
 
+\begin{verbatim}
 src_http_req_rate <integer>
 src_http_req_rate(<table>) <integer>
   Returns the average rate of HTTP requests from the current connection's
@@ -369,7 +436,9 @@ src_http_req_rate(<table>) <integer>
   stick-table, measured in amount of requests over the period configured in the
   table. This includes every started request, valid or not. If the address is
   not found, zero is returned. See also sc1/sc2_http_req_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_inc_gpc0 <integer>
 src_inc_gpc0(<table>) <integer>
   Increments the first General Purpose Counter associated to the connection's
@@ -378,11 +447,15 @@ src_inc_gpc0(<table>) <integer>
   created and 1 is returned. The test can also be used alone and always returns
   true. This is typically used as a second ACL in an expression in order to
   mark a connection when a first ACL was verified :
+\end{verbatim}
 
+\begin{verbatim}
         acl abuse src_http_req_rate gt 10
         acl kill  src_inc_gpc0
         tcp-request connection reject if abuse kill
+\end{verbatim}
 
+\begin{verbatim}
 src_kbytes_in <integer>
 src_kbytes_in(<table>) <integer>
   Returns the amount of data received from the connection's source IPv4 address
@@ -390,7 +463,9 @@ src_kbytes_in(<table>) <integer>
   in kilobytes over the period configured in the table. If the address is not
   found, zero is returned. The test is currently performed on 32-bit integers,
   which limits values to 4 terabytes. See also sc1/sc2_kbytes_in.
+\end{verbatim}
 
+\begin{verbatim}
 src_kbytes_out <integer>
 src_kbytes_out(<table>) <integer>
   Returns the amount of data sent to the connection's source IPv4 address in
@@ -398,10 +473,14 @@ src_kbytes_out(<table>) <integer>
   in kilobytes over the period configured in the table. If the address is not
   found, zero is returned. The test is currently performed on 32-bit integers,
   which limits values to 4 terabytes. See also sc1/sc2_kbytes_out.
+\end{verbatim}
 
+\begin{verbatim}
 src_port <integer>
   Applies to the client's TCP source port. This has a very limited usage.
+\end{verbatim}
 
+\begin{verbatim}
 src_sess_cnt <integer>
 src_sess_cnt(<table>) <integer>
   Returns the cumulated number of connections initiated from the current
@@ -409,7 +488,9 @@ src_sess_cnt(<table>) <integer>
   designated stick-table, that were transformed into sessions, which means that
   they were accepted by "tcp-request" rules. If the address is not found, zero
   is returned. See also sc1/sc2_sess_cnt.
+\end{verbatim}
 
+\begin{verbatim}
 src_sess_rate <integer>
 src_sess_rate(<table>) <integer>
   Returns the average session rate from the connection's source IPv4 address in
@@ -417,7 +498,9 @@ src_sess_rate(<table>) <integer>
   amount of sessions over the period configured in the table. A session is a
   connection that got past the early "tcp-request" rules. If the address is not
   found, zero is returned. See also sc1/sc2_sess_rate.
+\end{verbatim}
 
+\begin{verbatim}
 src_updt_conn_cnt <integer>
 src_updt_conn_cnt(<table>) <integer>
   Creates or updates the entry associated to the source IPv4 address in the
@@ -427,7 +510,9 @@ src_updt_conn_cnt(<table>) <integer>
   timer refreshed. The updated count is returned, so this match can't return
   zero. This is used to reject service abusers based on their source address.
   Note: it is recommended to use the more complete "track-counters" instead.
+\end{verbatim}
 
+\begin{verbatim}
   Example :
         # This frontend limits incoming SSH connections to 3 per 10 second for
         # each source address, and rejects excess connections until a 10 second
@@ -439,16 +524,22 @@ src_updt_conn_cnt(<table>) <integer>
             stick-table type ip size 20 expire 10s store conn_cnt
             tcp-request content reject if { src_update_count gt 3 }
             server local 127.0.0.1:22
+\end{verbatim}
 
+\begin{verbatim}
 srv_conn(<backend>/<server>) <integer>
   Applies to the number of currently established connections on the server,
   possibly including the connection being evaluated.
   It can be used to use a specific farm when one server is full.
   See also the "fe_conn", "be_conn" and "queue" criteria.
+\end{verbatim}
 
+\begin{verbatim}
 srv_id <integer>
   Applies to the server's id. Can be used in frontends or backends.
+\end{verbatim}
 
+\begin{verbatim}
 srv_is_up(<server>)
 srv_is_up(<backend>/<server>)
   Returns true when the designated server is UP, and false when it is either
@@ -459,17 +550,20 @@ srv_is_up(<backend>/<server>)
   Another possible use which is more of a hack consists in using dummy servers
   as boolean variables that can be enabled or disabled from the CLI, so that
   rules depending on those ACLs can be tweaked in realtime.
+\end{verbatim}
 
+\begin{verbatim}
 table_avl <integer>
 table_avl(<table>) <integer>
   Returns the total number of available entries in the current proxy's
   stick-table or in the designated stick-table. See also table_cnt.
+\end{verbatim}
 
+\begin{verbatim}
 table_cnt <integer>
 table_cnt(<table>) <integer>
   Returns the total number of entries currently in use in the current proxy's
   stick-table or in the designated stick-table. See also src_conn_cnt and
   table_avl for other entry counting methods.
-
-
 \end{verbatim}
+

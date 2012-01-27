@@ -3,58 +3,80 @@
 
 \section{Using ACLs to form conditions}
 
-\begin{verbatim}
-
 Some actions are only performed upon a valid condition. A condition is a
 combination of ACLs with operators. 3 operators are supported :
 
+\begin{verbatim}
   - AND (implicit)
   - OR  (explicit with the "or" keyword or the "||" operator)
   - Negation with the exclamation mark ("!")
+\end{verbatim}
+
 
 A condition is formed as a disjunctive form:
 
+\begin{verbatim}
    [!]acl1 [!]acl2 ... [!]acln  { or [!]acl1 [!]acl2 ... [!]acln } ...
+\end{verbatim}
 
-Such conditions are generally used after an "if" or "unless" statement,
+
+Such conditions are generally used after an \emph{if} or \emph{unless} statement,
 indicating when the condition will trigger the action.
 
+
 For instance, to block HTTP requests to the "*" URL with methods other than
-"OPTIONS", as well as POST requests without content-length, and GET or HEAD
+\emph{OPTIONS}, as well as POST requests without content-length, and GET or HEAD
 requests with a content-length greater than 0, and finally every request which
 is not either GET/HEAD/POST/OPTIONS !
 
+\begin{verbatim}
    acl missing_cl hdr_cnt(Content-length) eq 0
    block if HTTP_URL_STAR !METH_OPTIONS || METH_POST missing_cl
    block if METH_GET HTTP_CONTENT
    block unless METH_GET or METH_POST or METH_OPTIONS
+\end{verbatim}
 
-To select a different backend for requests to static contents on the "www" site
-and to every request on the "img", "video", "download" and "ftp" hosts :
 
+To select a different backend for requests to static contents on the \emph{www} site
+and to every request on the \emph{img}, \emph{video}, \emph{download} and \emph{ftp} hosts :
+
+\begin{verbatim}
    acl url_static  path_beg         /static /images /img /css
    acl url_static  path_end         .gif .png .jpg .css .js
    acl host_www    hdr_beg(host) -i www
    acl host_static hdr_beg(host) -i img. video. download. ftp.
+\end{verbatim}
 
+\begin{verbatim}
    # now use backend "static" for all static-only hosts, and for static urls
    # of host "www". Use backend "www" for the rest.
    use_backend static if host_static or host_www url_static
    use_backend www    if host_www
+\end{verbatim}
 
-It is also possible to form rules using "anonymous ACLs". Those are unnamed ACL
+
+It is also possible to form rules using \emph{anonymous ACLs}. Those are unnamed ACL
 expressions that are built on the fly without needing to be declared. They must
 be enclosed between braces, with a space before and after each brace (because
 the braces must be seen as independant words). Example :
 
+\begin{verbatim}
    The following rule :
+\end{verbatim}
 
+\begin{verbatim}
        acl missing_cl hdr_cnt(Content-length) eq 0
        block if METH_POST missing_cl
+\end{verbatim}
 
+\begin{verbatim}
    Can also be written that way :
+\end{verbatim}
 
+\begin{verbatim}
        block if METH_POST { hdr_cnt(Content-length) eq 0 }
+\end{verbatim}
+
 
 It is generally not recommended to use this construct because it's a lot easier
 to leave errors in the configuration when written that way. However, for very
@@ -62,17 +84,24 @@ simple rules matching only one source IP address for instance, it can make more
 sense to use them than to declare ACLs with random names. Another example of
 good use is the following :
 
+\begin{verbatim}
    With named ACLs :
+\end{verbatim}
 
+\begin{verbatim}
         acl site_dead nbsrv(dynamic) lt 2
         acl site_dead nbsrv(static)  lt 2
         monitor fail  if site_dead
-
-   With anonymous ACLs :
-
-        monitor fail if { nbsrv(dynamic) lt 2 } || { nbsrv(static) lt 2 }
-
-See section 4.2 for detailed help on the "block" and "use_backend" keywords.
-
-
 \end{verbatim}
+
+\begin{verbatim}
+   With anonymous ACLs :
+\end{verbatim}
+
+\begin{verbatim}
+        monitor fail if { nbsrv(dynamic) lt 2 } || { nbsrv(static) lt 2 }
+\end{verbatim}
+
+
+See section 4.2 for detailed help on the \keyword{block} and \keyword{use\_backend} keywords.
+

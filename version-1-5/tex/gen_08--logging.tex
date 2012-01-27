@@ -3,8 +3,6 @@
 
 \chapter{Logging}
 
-\begin{verbatim}
-
 One of HAProxy's strong points certainly lies is its precise logs. It probably
 provides the finest level of information available for such a product, which is
 very important for troubleshooting complex environments. Standard information
@@ -13,15 +11,19 @@ state at termination and precise termination cause, information about decisions
 to direct traffic to a server, and of course the ability to capture arbitrary
 headers.
 
+
 In order to improve administrators reactivity, it offers a great transparency
 about encountered problems, both internal and external, and it is possible to
 send logs to different sources at the same time with different level filters :
 
+\begin{verbatim}
   - global process-level logs (system errors, start/stop, etc..)
   - per-instance system and internal errors (lack of resource, bugs, ...)
   - per-instance external troubles (servers up/down, max connections)
   - per-instance activity (client connections), either at the establishment or
     at the termination.
+\end{verbatim}
+
 
 The ability to distribute different levels of logs to different log servers
 allow several production teams to interact and to fix their problems as soon
@@ -30,5 +32,3 @@ while the application team might be monitoring the up/down for their servers in
 real time, and the security team might analyze the activity logs with one hour
 delay.
 
-
-\end{verbatim}

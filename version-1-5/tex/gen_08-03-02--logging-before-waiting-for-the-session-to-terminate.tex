@@ -3,18 +3,14 @@
 
 \subsection{Logging before waiting for the session to terminate}
 
-\begin{verbatim}
-
 The problem with logging at end of connection is that you have no clue about
 what is happening during very long sessions, such as remote terminal sessions
 or large file downloads. This problem can be worked around by specifying
-"option logasap" in the frontend. Haproxy will then log as soon as possible,
+\emph{option logasap} in the frontend. Haproxy will then log as soon as possible,
 just before data transfer begins. This means that in case of TCP, it will still
 log the connection status to the server, and in case of HTTP, it will log just
 after processing the server headers. In this case, the number of bytes reported
 is the number of header bytes sent to the client. In order to avoid confusion
 with normal logs, the total time field and the number of bytes are prefixed
-with a '+' sign which means that real numbers are certainly larger.
+with a \CHAR{+} sign which means that real numbers are certainly larger.
 
-
-\end{verbatim}

@@ -3,18 +3,19 @@
 
 \section{HTTP response}
 
-\begin{verbatim}
-
 An HTTP response looks very much like an HTTP request. Both are called HTTP
 messages. Let's consider this HTTP response :
 
+\begin{verbatim}
   Line     Contents
   number
      1     HTTP/1.1 200 OK
      2     Content-length: 350
      3     Content-Type: text/html
+\end{verbatim}
 
-As a special case, HTTP supports so called "Informational responses" as status
+
+As a special case, HTTP supports so called \emph{Informational responses} as status
 codes 1xx. These messages are special in that they don't convey any part of the
 response, they're just used as sort of a signaling message to ask a client to
 continue to post its request for instance. In the case of a status 100 response
@@ -29,5 +30,3 @@ over the same connection and that haproxy must switch to tunnel mode, just as
 if a CONNECT had occurred. Then the Upgrade header would contain additional
 information about the type of protocol the connection is switching to.
 
-
-\end{verbatim}

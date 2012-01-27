@@ -3,32 +3,37 @@
 
 \section{Timing events}
 
-\begin{verbatim}
-
 Timers provide a great help in troubleshooting network problems. All values are
 reported in milliseconds (ms). These timers should be used in conjunction with
-the session termination flags. In TCP mode with "option tcplog" set on the
+the session termination flags. In TCP mode with \emph{option tcplog} set on the
 frontend, 3 control points are reported under the form "Tw/Tc/Tt", and in HTTP
 mode, 5 control points are reported under the form "Tq/Tw/Tc/Tr/Tt" :
 
+\begin{verbatim}
   - Tq: total time to get the client request (HTTP mode only). It's the time
     elapsed between the moment the client connection was accepted and the
     moment the proxy received the last HTTP header. The value "-1" indicates
     that the end of headers (empty line) has never been seen. This happens when
     the client closes prematurely or times out.
+\end{verbatim}
 
+\begin{verbatim}
   - Tw: total time spent in the queues waiting for a connection slot. It
     accounts for backend queue as well as the server queues, and depends on the
     queue size, and the time needed for the server to complete previous
     requests. The value "-1" means that the request was killed before reaching
     the queue, which is generally what happens with invalid or denied requests.
+\end{verbatim}
 
+\begin{verbatim}
   - Tc: total time to establish the TCP connection to the server. It's the time
     elapsed between the moment the proxy sent the connection request, and the
     moment it was acknowledged by the server, or between the TCP SYN packet and
     the matching SYN/ACK packet in return. The value "-1" means that the
     connection never established.
+\end{verbatim}
 
+\begin{verbatim}
   - Tr: server response time (HTTP mode only). It's the time elapsed between
     the moment the TCP connection was established to the server and the moment
     the server sent its complete response headers. It purely shows its request
@@ -40,28 +45,38 @@ mode, 5 control points are reported under the form "Tq/Tw/Tc/Tr/Tt" :
     untrusted network. A value of "-1" here means that the last the response
     header (empty line) was never seen, most likely because the server timeout
     stroke before the server managed to process the request.
+\end{verbatim}
 
+\begin{verbatim}
   - Tt: total session duration time, between the moment the proxy accepted it
     and the moment both ends were closed. The exception is when the "logasap"
     option is specified. In this case, it only equals (Tq+Tw+Tc+Tr), and is
     prefixed with a '+' sign. From this field, we can deduce "Td", the data
     transmission time, by substracting other timers when valid :
+\end{verbatim}
 
+\begin{verbatim}
         Td = Tt - (Tq + Tw + Tc + Tr)
+\end{verbatim}
 
+\begin{verbatim}
     Timers with "-1" values have to be excluded from this equation. In TCP
     mode, "Tq" and "Tr" have to be excluded too. Note that "Tt" can never be
     negative.
+\end{verbatim}
+
 
 These timers provide precious indications on trouble causes. Since the TCP
 protocol defines retransmit delays of 3, 6, 12... seconds, we know for sure
 that timers close to multiples of 3s are nearly always related to lost packets
-due to network problems (wires, negotiation, congestion). Moreover, if "Tt" is
+due to network problems (wires, negotiation, congestion). Moreover, if \emph{Tt} is
 close to a timeout value specified in the configuration, it often means that a
 session has been aborted on timeout.
 
+
 Most common cases :
 
+\begin{verbatim}
   - If "Tq" is close to 3000, a packet has probably been lost between the
     client and the proxy. This is very rare on local networks but might happen
     when clients are on far remote networks and send large requests. It may
@@ -74,16 +89,22 @@ Most common cases :
     connections have been accepted at once. Setting "option http-server-close"
     may display larger request times since "Tq" also measures the time spent
     waiting for additional requests.
+\end{verbatim}
 
+\begin{verbatim}
   - If "Tc" is close to 3000, a packet has probably been lost between the
     server and the proxy during the server connection phase. This value should
     always be very low, such as 1 ms on local networks and less than a few tens
     of ms on remote networks.
+\end{verbatim}
 
+\begin{verbatim}
   - If "Tr" is nearly always lower than 3000 except some rare values which seem
     to be the average majored by 3000, there are probably some packets lost
     between the proxy and the server.
+\end{verbatim}
 
+\begin{verbatim}
   - If "Tt" is large even for small byte counts, it generally is because
     neither the client nor the server decides to close the connection, for
     instance because both have agreed on a keep-alive connection mode. In order
@@ -94,33 +115,43 @@ Most common cases :
     smallest possible 'Tt' is important when connection regulation is used with
     the "maxconn" option on the servers, since no new connection will be sent
     to the server until another one is released.
+\end{verbatim}
 
-Other noticeable HTTP log cases ('xx' means any value to be ignored) :
 
+Other noticeable HTTP log cases (\CHAR{xx} means any value to be ignored) :
+
+\begin{verbatim}
   Tq/Tw/Tc/Tr/+Tt  The "option logasap" is present on the frontend and the log
                    was emitted before the data phase. All the timers are valid
                    except "Tt" which is shorter than reality.
+\end{verbatim}
 
+\begin{verbatim}
   -1/xx/xx/xx/Tt   The client was not able to send a complete request in time
                    or it aborted too early. Check the session termination flags
                    then "timeout http-request" and "timeout client" settings.
+\end{verbatim}
 
+\begin{verbatim}
   Tq/-1/xx/xx/Tt   It was not possible to process the request, maybe because
                    servers were out of order, because the request was invalid
                    or forbidden by ACL rules. Check the session termination
                    flags.
+\end{verbatim}
 
+\begin{verbatim}
   Tq/Tw/-1/xx/Tt   The connection could not establish on the server. Either it
                    actively refused it or it timed out after Tt-(Tq+Tw) ms.
                    Check the session termination flags, then check the
                    "timeout connect" setting. Note that the tarpit action might
                    return similar-looking patterns, with "Tw" equal to the time
                    the client connection was maintained open.
+\end{verbatim}
 
+\begin{verbatim}
   Tq/Tw/Tc/-1/Tt   The server has accepted the connection but did not return
                    a complete response in time, or it closed its connexion
                    unexpectedly after Tt-(Tq+Tw+Tc) ms. Check the session
                    termination flags, then check the "timeout server" setting.
-
-
 \end{verbatim}
+

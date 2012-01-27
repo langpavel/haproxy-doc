@@ -3,19 +3,17 @@
 
 \section{Proxy keywords matrix}
 
-\begin{verbatim}
-
 The following list of keywords is supported. Most of them may only be used in a
-limited set of section types. Some of them are marked as "deprecated" because
+limited set of section types. Some of them are marked as \emph{deprecated} because
 they are inherited from an old syntax which may be confusing or functionally
 limited, and there are new recommended keywords to replace them. Keywords
-marked with "(*)" can be optionally inverted using the "no" prefix, eg. "no
-option contstats". This makes sense when the option has been enabled by default
+marked with "(*)" can be optionally inverted using the \emph{no} prefix, eg. \emph{no
+option contstats}. This makes sense when the option has been enabled by default
 and must be disabled for a specific instance. Such options may also be prefixed
-with "default" in order to restore default settings regardless of what has been
-specified in a previous "defaults" section.
+with \emph{default} in order to restore default settings regardless of what has been
+specified in a previous \keyword{defaults} section.
 
-
+\begin{verbatim}
  keyword                              defaults   frontend   listen    backend
 ------------------------------------+----------+----------+---------+---------
 acl                                       -          X         X         X
@@ -173,6 +171,5 @@ transparent                 (deprecated)  X          -         X         X
 use_backend                               -          X         X         -
 ------------------------------------+----------+----------+---------+---------
  keyword                              defaults   frontend   listen    backend
-
-
 \end{verbatim}
+

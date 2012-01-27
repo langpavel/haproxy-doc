@@ -3,28 +3,30 @@
 
 \subsection{Disabling logging of external tests}
 
-\begin{verbatim}
-
 It is quite common to have some monitoring tools perform health checks on
 haproxy. Sometimes it will be a layer 3 load-balancer such as LVS or any
 commercial load-balancer, and sometimes it will simply be a more complete
 monitoring system such as Nagios. When the tests are very frequent, users often
 ask how to disable logging for those checks. There are three possibilities :
 
+\begin{verbatim}
   - if connections come from everywhere and are just TCP probes, it is often
     desired to simply disable logging of connections without data exchange, by
     setting "option dontlognull" in the frontend. It also disables logging of
     port scans, which may or may not be desired.
+\end{verbatim}
 
+\begin{verbatim}
   - if the connection come from a known source network, use "monitor-net" to
     declare this network as monitoring only. Any host in this network will then
     only be able to perform health checks, and their requests will not be
     logged. This is generally appropriate to designate a list of equipments
     such as other load-balancers.
+\end{verbatim}
 
+\begin{verbatim}
   - if the tests are performed on a known URI, use "monitor-uri" to declare
     this URI as dedicated to monitoring. Any host sending this request will
     only get the result of a health-check, and the request will not be logged.
-
-
 \end{verbatim}
+

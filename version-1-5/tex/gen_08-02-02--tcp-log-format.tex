@@ -3,35 +3,40 @@
 
 \subsection{TCP log format}
 
-\begin{verbatim}
-
-The TCP format is used when "option tcplog" is specified in the frontend, and
+The TCP format is used when \emph{option tcplog} is specified in the frontend, and
 is the recommended format for pure TCP proxies. It provides a lot of precious
 information for troubleshooting. Since this format includes timers and byte
 counts, the log is normally emitted at the end of the session. It can be
-emitted earlier if "option logasap" is specified, which makes sense in most
+emitted earlier if \emph{option logasap} is specified, which makes sense in most
 environments with long sessions such as remote terminals. Sessions which match
-the "monitor" rules are never logged. It is also possible not to emit logs for
+the \emph{monitor} rules are never logged. It is also possible not to emit logs for
 sessions for which no data were exchanged between the client and the server, by
-specifying "option dontlognull" in the frontend. Successful connections will
+specifying \emph{option dontlognull} in the frontend. Successful connections will
 not be logged if "option dontlog-normal" is specified in the frontend. A few
 fields may slightly vary depending on some configuration options, those are
-marked with a star ('*') after the field name below.
+marked with a star \CHAR{*} after the field name below.
 
+\begin{verbatim}
   Example :
         frontend fnt
             mode tcp
             option tcplog
             log global
             default_backend bck
+\end{verbatim}
 
+\begin{verbatim}
         backend bck
             server srv1 127.0.0.1:8000
+\end{verbatim}
 
+\begin{verbatim}
     >>> Feb  6 12:12:56 localhost \
           haproxy[14387]: 10.0.1.2:33313 [06/Feb/2009:12:12:51.443] fnt \
           bck/srv1 0/0/5007 212 -- 0/0/0/0/3 0/0
+\end{verbatim}
 
+\begin{verbatim}
   Field   Format                                Extract from the example above
       1   process_name '[' pid ']:'                            haproxy[14387]:
       2   client_ip ':' client_port                             10.0.1.2:33313
@@ -43,7 +48,9 @@ marked with a star ('*') after the field name below.
       8   termination_state                                                 --
       9   actconn '/' feconn '/' beconn '/' srv_conn '/' retries*    0/0/0/0/3
      10   srv_queue '/' backend_queue                                      0/0
+\end{verbatim}
 
+\begin{verbatim}
 Detailed fields description :
   - "client_ip" is the IP address of the client which initiated the TCP
     connection to haproxy. If the connection was accepted on a UNIX socket
@@ -51,74 +58,100 @@ Detailed fields description :
     when the connection is accepted on a socket configured with "accept-proxy"
     and the PROXY protocol is correctly used, then the logs will reflect the
     forwarded connection's information.
+\end{verbatim}
 
+\begin{verbatim}
   - "client_port" is the TCP port of the client which initiated the connection.
     If the connection was accepted on a UNIX socket instead, the port would be
     replaced with the ID of the accepting socket, which is also reported in the
     stats interface.
+\end{verbatim}
 
+\begin{verbatim}
   - "accept_date" is the exact date when the connection was received by haproxy
     (which might be very slightly different from the date observed on the
     network if there was some queuing in the system's backlog). This is usually
     the same date which may appear in any upstream firewall's log.
+\end{verbatim}
 
+\begin{verbatim}
   - "frontend_name" is the name of the frontend (or listener) which received
     and processed the connection.
+\end{verbatim}
 
+\begin{verbatim}
   - "backend_name" is the name of the backend (or listener) which was selected
     to manage the connection to the server. This will be the same as the
     frontend if no switching rule has been applied, which is common for TCP
     applications.
+\end{verbatim}
 
+\begin{verbatim}
   - "server_name" is the name of the last server to which the connection was
     sent, which might differ from the first one if there were connection errors
     and a redispatch occurred. Note that this server belongs to the backend
     which processed the request. If the connection was aborted before reaching
     a server, "<NOSRV>" is indicated instead of a server name.
+\end{verbatim}
 
+\begin{verbatim}
   - "Tw" is the total time in milliseconds spent waiting in the various queues.
     It can be "-1" if the connection was aborted before reaching the queue.
     See "Timers" below for more details.
+\end{verbatim}
 
+\begin{verbatim}
   - "Tc" is the total time in milliseconds spent waiting for the connection to
     establish to the final server, including retries. It can be "-1" if the
     connection was aborted before a connection could be established. See
     "Timers" below for more details.
+\end{verbatim}
 
+\begin{verbatim}
   - "Tt" is the total time in milliseconds elapsed between the accept and the
     last close. It covers all possible processings. There is one exception, if
     "option logasap" was specified, then the time counting stops at the moment
     the log is emitted. In this case, a '+' sign is prepended before the value,
     indicating that the final one will be larger. See "Timers" below for more
     details.
+\end{verbatim}
 
+\begin{verbatim}
   - "bytes_read" is the total number of bytes transmitted from the server to
     the client when the log is emitted. If "option logasap" is specified, the
     this value will be prefixed with a '+' sign indicating that the final one
     may be larger. Please note that this value is a 64-bit counter, so log
     analysis tools must be able to handle it without overflowing.
+\end{verbatim}
 
+\begin{verbatim}
   - "termination_state" is the condition the session was in when the session
     ended. This indicates the session state, which side caused the end of
     session to happen, and for what reason (timeout, error, ...). The normal
     flags should be "--", indicating the session was closed by either end with
     no data remaining in buffers. See below "Session state at disconnection"
     for more details.
+\end{verbatim}
 
+\begin{verbatim}
   - "actconn" is the total number of concurrent connections on the process when
     the session was logged. It it useful to detect when some per-process system
     limits have been reached. For instance, if actconn is close to 512 when
     multiple connection errors occur, chances are high that the system limits
     the process to use a maximum of 1024 file descriptors and that all of them
     are used. See section 3 "Global parameters" to find how to tune the system.
+\end{verbatim}
 
+\begin{verbatim}
   - "feconn" is the total number of concurrent connections on the frontend when
     the session was logged. It is useful to estimate the amount of resource
     required to sustain high loads, and to detect when the frontend's "maxconn"
     has been reached. Most often when this value increases by huge jumps, it is
     because there is congestion on the backend servers, but sometimes it can be
     caused by a denial of service attack.
+\end{verbatim}
 
+\begin{verbatim}
   - "beconn" is the total number of concurrent connections handled by the
     backend when the session was logged. It includes the total number of
     concurrent connections active on servers as well as the number of
@@ -127,7 +160,9 @@ Detailed fields description :
     Most often when this value increases by huge jumps, it is because there is
     congestion on the backend servers, but sometimes it can be caused by a
     denial of service attack.
+\end{verbatim}
 
+\begin{verbatim}
   - "srv_conn" is the total number of concurrent connections still active on
     the server when the session was logged. It can never exceed the server's
     configured "maxconn" parameter. If this value is very often close or equal
@@ -137,7 +172,9 @@ Detailed fields description :
     time. When only one of the server's "srv_conn" is high, it usually means
     that this server has some trouble causing the connections to take longer to
     be processed than on other servers.
+\end{verbatim}
 
+\begin{verbatim}
   - "retries" is the number of connection retries experienced by this session
     when trying to connect to the server. It must normally be zero, unless a
     server is being stopped at the same moment the connection was attempted.
@@ -151,7 +188,9 @@ Detailed fields description :
     sometimes be the same in case of hashing for instance. So as a general rule
     of thumb, when a '+' is present in front of the retry count, this count
     should not be attributed to the logged server.
+\end{verbatim}
 
+\begin{verbatim}
   - "srv_queue" is the total number of requests which were processed before
     this one in the server queue. It is zero when the request has not gone
     through the server queue. It makes it possible to estimate the approximate
@@ -160,7 +199,9 @@ Detailed fields description :
     redispatch and passes through two server queues, their positions will be
     cumulated. A request should not pass through both the server queue and the
     backend queue unless a redispatch occurs.
+\end{verbatim}
 
+\begin{verbatim}
   - "backend_queue" is the total number of requests which were processed before
     this one in the backend's global queue. It is zero when the request has not
     gone through the global queue. It makes it possible to estimate the average
@@ -170,6 +211,5 @@ Detailed fields description :
     and then both positions will be cumulated. A request should not pass
     through both the server queue and the backend queue unless a redispatch
     occurs.
-
-
 \end{verbatim}
+

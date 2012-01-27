@@ -3,12 +3,11 @@
 
 \section{Pre-defined ACLs}
 
-\begin{verbatim}
-
 Some predefined ACLs are hard-coded so that they do not have to be declared in
 every frontend which needs them. They all have their names in upper case in
 order to avoid confusion. Their equivalence is provided below.
 
+\begin{verbatim}
 ACL name          Equivalent to                Usage
 ---------------+-----------------------------+---------------------------------
 FALSE            always_false                  never match
@@ -31,6 +30,5 @@ REQ_CONTENT      req_len gt 0                  match data in the request buffer
 TRUE             always_true                   always match
 WAIT_END         wait_end                      wait for end of content analysis
 ---------------+-----------------------------+---------------------------------
-
-
 \end{verbatim}
+

@@ -3,13 +3,14 @@
 
 \subsection{The Response line}
 
+Line 1 is the \emph{response line}. It is always composed of 3 fields :
+
 \begin{verbatim}
-
-Line 1 is the "response line". It is always composed of 3 fields :
-
   - a version tag : HTTP/1.1
   - a status code : 200
   - a reason      : OK
+\end{verbatim}
+
 
 The status code is always 3-digit. The first digit indicates a general status :
  - 1xx = informational message to be skipped (eg: 100, 101)
@@ -18,14 +19,17 @@ The status code is always 3-digit. The first digit indicates a general status :
  - 4xx = error caused by the client (eg: 401, 403, 404)
  - 5xx = error caused by the server (eg: 500, 502, 503)
 
+
 Please refer to RFC2616 for the detailed meaning of all such codes. The
-"reason" field is just a hint, but is not parsed by clients. Anything can be
+\emph{reason} field is just a hint, but is not parsed by clients. Anything can be
 found there, but it's a common practice to respect the well-established
-messages. It can be composed of one or multiple words, such as "OK", "Found",
-or "Authentication Required".
+messages. It can be composed of one or multiple words, such as \emph{OK}, \emph{Found},
+or \emph{Authentication Required}.
+
 
 Haproxy may emit the following status codes by itself :
 
+\begin{verbatim}
   Code  When / reason
    200  access to stats page, and when replying to monitoring requests
    301  when performing a redirection, depending on the configured code
@@ -43,9 +47,9 @@ Haproxy may emit the following status codes by itself :
    503  when no server was available to handle the request, or in response to
         monitoring requests which match the "monitor fail" condition
    504  when the response timeout strikes before the server responds
+\end{verbatim}
 
-The error 4xx and 5xx codes above may be customized (see "errorloc" in section
+
+The error 4xx and 5xx codes above may be customized (see \emph{errorloc} in section
 4.2).
 
-
-\end{verbatim}
