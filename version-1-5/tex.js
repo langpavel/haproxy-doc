@@ -1,9 +1,8 @@
 /*
- * HAProxy configuration book builder
+ * HAProxy configuration book builder for LaTeX
  * run it in node.js
  * $ node make.js
  *
- * var m = require('make'); var parts = m.split_chapters(m.text); filenames = m.writeFiles(parts)
  */
 
 var fs = require('fs');
@@ -53,7 +52,7 @@ var split_chapters = module.exports.split_chapters = function(text) {
 };
 
 
-var hasIndents = function(text) {
+var hasIndents = function(text) { // identify tables too
 	return text.match(/^(  |----+)/mg) !== null;
 };
 

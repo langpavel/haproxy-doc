@@ -1,0 +1,176 @@
+% This is generated content
+% Section 4.1.
+
+\section{Proxy keywords matrix}
+
+\newcommand{\NO}{--}
+\newcommand{\YES}{$\times$}
+\newcommand{\optnopr}{ $\neg$}
+\newcommand{\deprecated}[1]{\textsl{{\color{gray}#1}}}
+\newcommand{\depword}[1]{\texttt{\deprecated{#1}}}
+
+The following list of keywords is supported. Most of them may only be used in a
+limited set of section types. Some of them are marked as \deprecated{deprecated} because
+they are inherited from an old syntax which may be confusing or functionally
+limited, and there are new recommended keywords to replace them. Keywords
+marked with\optnopr{} can be optionally inverted using the \texttt{no} prefix,
+eg.~\texttt{no option contstats}. This makes sense when the option has been enabled by default
+and must be disabled for a specific instance. Such options may also be prefixed
+with \emph{default} in order to restore default settings regardless of what has been
+specified in a previous \keyword{defaults} section.
+
+\begin{longtable}{ l c c c c }
+\hline
+\textbf{keyword} &
+\textbf{defaults} & \textbf{frontend} & \textbf{listen} & \textbf{backend} \\ \hline \hline 
+\endhead
+\keyword{acl}                                    &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{appsession}                             &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{backlog}                                &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{balance}                                &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{bind}                                   &   \NO    &   \YES  &   \YES  &   \NO   \\
+\keyword{bind-process}                           &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{block}                                  &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{capture cookie}                         &   \NO    &   \YES  &   \YES  &   \NO   \\
+\keyword{capture request header}                 &   \NO    &   \YES  &   \YES  &   \NO   \\
+\keyword{capture response header}                &   \NO    &   \YES  &   \YES  &   \NO   \\
+\depword{clitimeout}                             &   \YES   &   \YES  &   \YES  &   \NO   \\
+\depword{contimeout}                             &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{cookie}                                 &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{default-server}                         &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{default\_backend}                       &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{description}                            &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{disabled}                               &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{dispatch}                               &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{enabled}                                &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{errorfile}                              &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{errorloc}                               &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{errorloc302}                            &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{errorloc303}                            &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{force-persist}                          &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{fullconn}                               &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{grace}                                  &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{hash-type}                              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{http-check disable-on-404}              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{http-check expect}                      &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{http-check send-state}                  &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{http-request}                           &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{id}                                     &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{ignore-persist}                         &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{log}\optnopr                            &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{maxconn}                                &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{mode}                                   &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{monitor fail}                           &   \NO    &   \YES  &   \YES  &   \NO   \\
+\keyword{monitor-net}                            &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{monitor-uri}                            &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option abortonclose}\optnopr            &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option accept-invalid-http-request}\optnopr  &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option accept-invalid-http-response}\optnopr &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option allbackups}\optnopr              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option checkcache}\optnopr              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option clitcpka}\optnopr                &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option contstats}\optnopr               &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option dontlog-normal}\optnopr          &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option dontlognull}\optnopr             &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option forceclose}\optnopr              &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option forwardfor}                      &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option http-no-delay}\optnopr           &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option http-pretend-keepalive}\optnopr  &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option http-server-close}\optnopr       &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option http-use-proxy-header}\optnopr   &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option httpchk}                         &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option httpclose}\optnopr               &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option httplog}                         &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option http\_proxy}\optnopr             &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option independant-streams}\optnopr     &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option ldap-check}                      &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option log-health-checks}\optnopr       &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option log-separate-errors}\optnopr     &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option logasap}\optnopr                 &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option mysql-check}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option pgsql-check}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option nolinger}\optnopr                &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option originalto}                      &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option persist}\optnopr                 &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option redispatch}\optnopr              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option redis-check}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option smtpchk}                         &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option socket-stats}\optnopr            &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option splice-auto}\optnopr             &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option splice-request}\optnopr          &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option splice-response}\optnopr         &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option srvtcpka}\optnopr                &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option ssl-hello-chk}                   &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option tcp-smart-accept}\optnopr        &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{option tcp-smart-connect}\optnopr       &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{option tcpka}                           &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option tcplog}                          &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{option transparent}\optnopr             &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{persist rdp-cookie}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{rate-limit sessions}                    &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{redirect}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\depword{redisp}                                 &   \YES   &   \NO   &   \YES  &   \YES  \\
+\depword{redispatch}                             &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{reqadd}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqallow}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqdel}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqdeny}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqiallow}                              &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqidel}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqideny}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqipass}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqirep}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqisetbe}                              &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqitarpit}                             &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqpass}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqrep}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqsetbe}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{reqtarpit}                              &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{retries}                                &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{rspadd}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rspdel}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rspdeny}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rspidel}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rspideny}                               &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rspirep}                                &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{rsprep}                                 &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{server}                                 &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{source}                                 &   \YES   &   \NO   &   \YES  &   \YES  \\
+\depword{srvtimeout}                             &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats admin}                            &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stats auth}                             &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats enable}                           &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats hide-version}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats http-request}                     &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stats realm}                            &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats refresh}                          &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats scope}                            &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats show-desc}                        &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats show-legends}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats show-node}                        &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stats uri}                              &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{stick match}                            &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stick on}                               &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stick store-request}                    &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stick store-response}                   &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{stick-table}                            &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{tcp-request connection}                 &   \NO    &   \YES  &   \YES  &   \NO   \\
+\keyword{tcp-request content}                    &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{tcp-request inspect-delay}              &   \NO    &   \YES  &   \YES  &   \YES  \\
+\keyword{tcp-response content}                   &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{tcp-response inspect-delay}             &   \NO    &   \NO   &   \YES  &   \YES  \\
+\keyword{timeout check}                          &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{timeout client}                         &   \YES   &   \YES  &   \YES  &   \NO   \\
+\depword{timeout clitimeout}                     &   \YES   &   \YES  &   \YES  &   \NO   \\
+\keyword{timeout connect}                        &   \YES   &   \NO   &   \YES  &   \YES  \\
+\depword{timeout contimeout}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{timeout http-keep-alive}                &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{timeout http-request}                   &   \YES   &   \YES  &   \YES  &   \YES  \\
+\keyword{timeout queue}                          &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{timeout server}                         &   \YES   &   \NO   &   \YES  &   \YES  \\
+\depword{timeout srvtimeout}                     &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{timeout tarpit}                         &   \YES   &   \YES  &   \YES  &   \YES  \\
+\depword{transparent}                            &   \YES   &   \NO   &   \YES  &   \YES  \\
+\keyword{use\_backend}                           &   \NO    &   \YES  &   \YES  &   \NO   \\
+\end{longtable}
+

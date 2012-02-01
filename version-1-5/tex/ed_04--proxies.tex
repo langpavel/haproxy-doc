@@ -1,0 +1,50 @@
+% This is generated content
+% Section 4.
+
+\chapter{Proxies}
+
+Proxy configuration can be located in a set of sections:
+\begin{itemize}
+\item \keyword{defaults} \param{name}
+\item \keyword{frontend} \param{name}
+\item \keyword{backend}  \param{name}
+\item \keyword{listen}   \param{name}
+\end{itemize}
+
+A \keyword{defaults} section sets default parameters for all other sections following
+its declaration. Those default parameters are reset by the next \keyword{defaults}
+section. See below for the list of parameters which can be set in a \keyword{defaults}
+section. The name is optional but its use is encouraged for better readability.
+
+
+A \keyword{frontend} section describes a set of listening sockets accepting client
+connections.
+
+
+A \keyword{backend} section describes a set of servers to which the proxy will connect
+to forward incoming connections.
+
+
+A \keyword{listen} section defines a complete proxy with its frontend and backend
+parts combined in one section. It is generally useful for TCP-only traffic.
+
+
+All proxy names must be formed from upper and lower case letters, digits,
+\CHAR{-} (dash), \CHAR{\_} (underscore) , \CHAR{.} (dot) and \CHAR{:} (colon). ACL names are
+case-sensitive, which means that \CHAR{www} and \CHAR{WWW} are two different proxies.
+
+
+Historically, all proxy names could overlap, it just caused troubles in the
+logs. Since the introduction of content switching, it is mandatory that two
+proxies with overlapping capabilities (frontend/backend) have different names.
+However, it is still permitted that a frontend and a backend share the same
+name, as this configuration seems to be commonly encountered.
+
+
+Right now, two major proxy modes are supported: \texttt{tcp}, also known as layer 4,
+and \texttt{http}, also known as layer 7. In layer 4 mode, HAProxy simply forwards
+bidirectional traffic between two sides. In layer 7 mode, HAProxy analyzes the
+protocol, and can interact with it by allowing, blocking, switching, adding,
+modifying, or removing arbitrary contents in requests or responses, based on
+arbitrary criteria.
+

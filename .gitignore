@@ -7,3 +7,4 @@
 *.dvi
 *.ps
 *.xml
+node_modules/
