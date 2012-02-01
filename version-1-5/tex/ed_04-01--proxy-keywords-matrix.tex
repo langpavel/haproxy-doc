@@ -16,7 +16,7 @@ limited, and there are new recommended keywords to replace them. Keywords
 marked with\optnopr{} can be optionally inverted using the \texttt{no} prefix,
 eg.~\texttt{no option contstats}. This makes sense when the option has been enabled by default
 and must be disabled for a specific instance. Such options may also be prefixed
-with \emph{default} in order to restore default settings regardless of what has been
+with \texttt{default} in order to restore default settings regardless of what has been
 specified in a previous \keyword{defaults} section.
 
 \rowcolors{1}{}{lightergray}
@@ -26,6 +26,10 @@ specified in a previous \keyword{defaults} section.
 \textbf{keyword} &
 \textbf{defaults} & \textbf{frontend} & \textbf{listen} & \textbf{backend} \\ \hline \hline 
 \endhead
+\hline
+\textbf{keyword} &
+\textbf{defaults} & \textbf{frontend} & \textbf{listen} & \textbf{backend} \\ \hline
+\endfoot
 \keyword{acl}                                    &   \NO    &   \YES  &   \YES  &   \YES  \\
 \keyword{appsession}                             &   \NO    &   \NO   &   \YES  &   \YES  \\
 \keyword{backlog}                                &   \YES   &   \YES  &   \YES  &   \NO   \\
